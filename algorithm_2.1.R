@@ -10,8 +10,7 @@ predict_gauss <- function(X_learn, y_learn, kov, noise, x_input){
   K <- kov_cross(X_learn, X_learn, kov)
   L <- chol(K + diag(x=noise, nrow = nrow(K)), pivot = TRUE)
   alpha <- solve(t(L))%*%solve(L)%*%y_learn
-  
-  k_1 <- kov_cross(X_learn,x_input, kov) 
+  k_1 <- kov_cross(X_learn,list(x_input), kov)      # change of the vector-type of x_input
   f_predict <- t(k_1)%*%alpha
   
   v <- solve(L) %*% k_1 
