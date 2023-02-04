@@ -8,9 +8,19 @@ predict_gauss <- function(X_learn, y_learn, kov, noise, x_input){
   #these values can be stored in a attribut of the gaussian process, they just
   #depend on the learning data
   K <- kov_cross(X_learn, X_learn, kov)
-  L <- chol(K + diag(x=noise, nrow = nrow(K)), pivot = TRUE)
-  alpha <- solve(t(L))%*%solve(L)%*%y_learn
-  k_1 <- kov_cross(X_learn,list(x_input), kov)      # change of the vector-type of x_input
+  
+  #Not using the cholesky-decomposition, because saving this leads to massive
+  #numerical errors, even if its more stable than normal solve-function
+  #L <- chol(K + diag(x=noise, nrow = nrow(K)), pivot = TRUE)
+  #alpha <- solve(t(L))%*%solve(L)%*%y_learn          
+  
+  
+  tryCatch(
+    alpha <- .Internal(La_solve(K + diag(x=noise, nrow = nrow(K)),y_learn, .Machine$double.eps)),
+    error = function(cond) return(NaN)
+  )
+  
+  k_1 <- kov_cross(X_learn,list(x_input), kov)      # change of the vector-type of x 
   f_predict <- t(k_1)%*%alpha
   
   v <- solve(L) %*% k_1 
