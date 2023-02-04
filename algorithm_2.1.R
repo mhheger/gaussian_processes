@@ -23,9 +23,9 @@ predict_gauss <- function(X_learn, y_learn, kov, noise, x_input){
   k_1 <- kov_cross(X_learn,list(x_input), kov)      # change of the vector-type of x 
   f_predict <- t(k_1)%*%alpha
   
-  v <- solve(L) %*% k_1 
+  v <- solve(K + diag(x=noise, nrow = nrow(K)),k_1) 
   
-  var_f <- kov(x_input,x_input)-sum(v^2)
+  var_f <- kov(x_input,x_input)-t(k_1)%*%v
   
   log_marginal_likelihood <- -0.5* t(y_learn) %*% alpha - sum(log(diag(L)))-nrow(L)*0.5*2*pi
   
