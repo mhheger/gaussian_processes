@@ -11,7 +11,7 @@ predict_gauss <- function(X_learn, y_learn, kov, noise, x_input){
   
   #Not using the cholesky-decomposition, because saving this leads to massive
   #numerical errors, even if its more stable than normal solve-function
-  #L <- chol(K + diag(x=noise, nrow = nrow(K)), pivot = TRUE)
+  L <- chol(K + diag(x=noise, nrow = nrow(K)), pivot = TRUE)
   #alpha <- solve(t(L))%*%solve(L)%*%y_learn          
   
   
