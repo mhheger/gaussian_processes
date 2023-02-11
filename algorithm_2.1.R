@@ -1,4 +1,23 @@
+
+
+#' predict_gauss
+#'
+#' @param X_learn The learning data, given as an matrix, a list of vectors or a tibble 
+#' @param y_learn The values of the unknown function at the positions given in X_learn
+#' @param cov The covariance-function, which is used. It has to provide a function call 
+#' like cov(x,y) with x and y vectors of the same size and outputs a scalar.
+#' @param noise The assumed value of the variance of the noise of the learning data
+#' @param x_input The position we want to predict the value of the unknown function  
+#'
+#' @return list of three elements 
+#' @param f_predict The predicted value 
+#' @param var_f The variance
+#' @param log_marginal_likelihood
+#' @export
+#'
+#' @examples
 predict_gauss <- function(X_learn, y_learn, cov, noise, x_input){
+  
   #do some converting to get either atomic vectors or list of vectors
   y_learn <- as.vector(y_learn)
   X_learn <- convert_to_list(X_learn, length(y_learn))
@@ -64,6 +83,5 @@ cov_cross <- function(x,y,cov){ #returns the variance-kovariance-matrix
       m[i,j] <- cov(x[[i]],y[[j]])
     }
   }
-  
   return(m)
 }
