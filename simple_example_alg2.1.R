@@ -2,7 +2,7 @@
 
 #einfache Kernelfunktion 
 f <- function(x,y) {      
-  return (exp(-0.5*sum(abs(x-y)^2)))
+  return (squared_exp_cov(sqrt(sum(abs(x-y)^2)),1))
   #return(0.3)
 }
 
@@ -20,15 +20,15 @@ plot_with_confidence_band <- function(x,y,variance){
 
 #Generierung der Lerndaten 
 g <- function(x) sign(x)*(0.001*x^2 +3)
-x<- runif(10, -10, 10)
-y <- g(x) + rnorm(10, 0 , 1)
+x<- runif(20, -10, 10)
+y <- g(x) + rnorm(20, 0 , 0.1)
 
 #Hilfsfunktionen zur Auswertung 
 eval_gauss_value <- function(z){
-  predict_gauss(x,y,f, 1,z)$f_predict
+  predict_gauss(x,y,f, 0.1,z)$f_predict
 }
 eval_gauss_variance<- function(z){
-  predict_gauss(x,y,f, 1,z)$var_f
+  predict_gauss(x,y,f, 0.1,z)$var_f
 }
 
 #Auswertung an Testpunkten 
