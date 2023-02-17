@@ -21,7 +21,8 @@ predict_gauss <- function(X_learn, y_learn, cov, noise, x_input){
 
   if(noise < 0){
     stop("Noise is not allowed to be negative!")
-  } else if (!is.numeric(y_learn) | !is.numeric(X_learn[[1]]) | !is.numeric(x_input)){
+  } else if (!is.numeric(y_learn) | !is.numeric(X_learn[[1]])
+             | !is.numeric(x_input) | !is.numeric(noise)){
     stop("Cannot handle non-numeric inputs!")
   } else if(length(x_input)!=length(X_learn[[1]])) {
     stop("Dimension of input data does not fit to dimension of training data")
