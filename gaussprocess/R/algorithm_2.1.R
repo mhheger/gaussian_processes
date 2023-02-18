@@ -19,6 +19,9 @@ predict_gauss <- function(X_learn, y_learn, cov, noise, x_input){
   y_learn <- as.vector(y_learn)
   X_learn <- convert_to_list(X_learn, length(y_learn))
 
+  if(length(noise)!=1) stop("length of noise is not 1")
+  if(typeof(cov)!="closure") stop("cov has to be a function")
+
   if(noise < 0){
     stop("Noise is not allowed to be negative!")
   } else if (!is.numeric(y_learn) | !is.numeric(X_learn[[1]])
@@ -56,13 +59,24 @@ predict_gauss <- function(X_learn, y_learn, cov, noise, x_input){
 }
 
 
+#' convert_to_list
+#' A package interna, that provides the converting of the input data to the
+#' needed list type
+#' @param x vector, matrix, data.frame, that should be converted into a list of
+#' input vectors
+#' @param n the dimension of each vector in the list that is returned
+#'
+#' @return a list of vectors of length n
+#'
+#' @examples
 convert_to_list <- function(x, n){
   if(is.data.frame(x)) x <- as.matrix(x)
-
+  if(length(x)%%n !=0) stop("length/dimension of input data doesn't fit")
+  if(is.vector(x)) x <- matrix(x, nrow= n)
   if(length(x)-n>0 & !is.list(x)){
     if(is.matrix(x)){
       if(ncol(x)==n) x <- t(x)
-      x <- apply(x,2,c, simplify = FALSE)
+      x <- apply(x,1,function(x) c(unname(x)), simplify = FALSE)
     }
     else{
       stop("The data has to be a vector, a list of vectors, a matrix or a dataframe")
@@ -73,8 +87,21 @@ convert_to_list <- function(x, n){
 }
 
 
+#' cov_cross
+#'
+#' @param x first list of input vectors
+#' @param y second list of input vectors
+#' @param cov covariance function, that returns a scalar
+#'
+#' @return variance-covariance-matrix
+#'
+#' @examples
+#'
 cov_cross <- function(x,y,cov){ #returns the variance-kovariance-matrix
-  #input: list of vectors
+  if(!is.list(x) | !is.list(y) | !is.numeric(x[[1]])| !is.numeric(y[[1]])){
+    stop("Input has to be a list of numerical vectors!")
+  }
+
   m <- matrix(nrow = length(x), ncol = length(y))
   for (i in seq_along(x)){
     for (j in seq_along(y)){
