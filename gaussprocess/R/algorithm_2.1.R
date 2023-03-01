@@ -59,6 +59,40 @@ predict_gauss <- function(X_learn, y_learn, cov, noise, x_input){
 }
 
 
+
+predict_gauss2 <- function(X, x_input){
+  #need: add sanity checks for cov , handle different type
+  # of input data
+
+  #these values can be stored in a attribute of the gaussian process, they just
+  #depend on the learning data
+  learn_data <- X$get_data()
+  K <- X$get_K()
+  cov <- X$get_cov()
+  noise <- X$get_noise()
+  #L <- chol(K + diag(x=noise, nrow = nrow(K)), pivot = TRUE)
+
+  #tryCatch(
+   # alpha <- .Internal(La_solve(K + diag(x=noise, nrow = nrow(K)),learn_data$y_learn, .Machine$double.eps)),
+    #error = function(cond) return(NaN)
+  #)
+  alpha <- solve(K + diag(x=noise, nrow = nrow(K)),learn_data$y_learn)
+  k_1 <- cov_cross(learn_data$X_learn,list(x_input), cov)      # change of the vector-type of x
+
+  v <- solve(K + diag(x=noise, nrow = nrow(K)),k_1)
+
+  f_predict <- t(k_1)%*%alpha
+  var_f <- cov(x_input,x_input)-t(k_1)%*%v
+  log_marginal_likelihood <- -0.5* t(learn_data$y_learn) %*% alpha - log(det(K+ diag(x=noise, nrow = nrow(K))))-nrow(K)*0.5*2*pi
+
+  results <- list("f_predict" = f_predict,
+                  "var_f" = var_f,
+                  "log_marginal_likelihood"= log_marginal_likelihood
+  )
+  return(results)
+}
+
+
 #' convert_to_list
 #' A package interna, that provides the converting of the input data to the
 #' needed list type
@@ -87,17 +121,17 @@ convert_to_list <- function(x, n){
 }
 
 
-#' cov_cross
+#' calculating the variance-covariance-matrix
 #'
 #' @param x first list of input vectors
 #' @param y second list of input vectors
 #' @param cov covariance function, that returns a scalar
 #'
-#' @return variance-covariance-matrix
+#' @return variance-covariance-matrix of dimension 'length(x)':'length(y)'
 #'
 #' @examples
 #'
-cov_cross <- function(x,y,cov){ #returns the variance-kovariance-matrix
+cov_cross <- function(x,y,cov){ #returns the variance-covariance-matrix
   if(!is.list(x) | !is.list(y) | !is.numeric(x[[1]])| !is.numeric(y[[1]])){
     stop("Input has to be a list of numerical vectors!")
   }

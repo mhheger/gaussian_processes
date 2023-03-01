@@ -12,8 +12,9 @@ plot_with_confidence_band <- function(x,y,variance){
     c(x, rev(x)), 
     c(y+variance, rev(y)-rev(variance)),
     col = "green",
+    lty =3,
     border = NA, 
-    density = 20
+    density = 100
   )
   lines(x,y, lwd = 2)
 }
