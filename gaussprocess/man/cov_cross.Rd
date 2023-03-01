@@ -2,7 +2,7 @@
 % Please edit documentation in R/algorithm_2.1.R
 \name{cov_cross}
 \alias{cov_cross}
-\title{cov_cross}
+\title{calculating the variance-covariance-matrix}
 \usage{
 cov_cross(x, y, cov)
 }
@@ -14,8 +14,8 @@ cov_cross(x, y, cov)
 \item{cov}{covariance function, that returns a scalar}
 }
 \value{
-variance-covariance-matrix
+variance-covariance-matrix of dimension 'length(x)':'length(y)'
 }
 \description{
-cov_cross
+calculating the variance-covariance-matrix
 }
