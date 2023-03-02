@@ -98,13 +98,13 @@ find_mode_laplace <- function(K, y, likelihood_fun){
                                                        to be either 'logit' or 'probit'")
   if(!all(y %in% c(-1,0,1))) stop("values are just allowed to be -1, 0 or 1")
   response_fct <- function(f){
-    res <- -response_list[[likelihood_fun]]$log_p(y,f) +0.5*t(f)%*%solve(K,f)+0.5*(log(abs(det(K)))-length(y)*log(2*pi))
-    attr(res,"gradient") <- -1*response_list[[likelihood_fun]]$del_f(y,f)+ solve(K,f)
-    attr(res,"hessian") <- -1*response_list[[likelihood_fun]]$hess_f(y,f)+ solve(K)
+    res <- -response_list[[likelihood_fun]]$log_p(y,f) +0.5*t(f)%*%solve(K,f)+0.5*(log(abs(det(K)))+length(y)*log(2*pi))
+    attr(res,"gradient") <- -1*(response_list[[likelihood_fun]]$del_f(y,f)- solve(K,f))
+    attr(res,"hessian") <- -1*(response_list[[likelihood_fun]]$hess_f(y,f)- solve(K))
     return(res)
   }
   f<- rep(0,length = length(y))
-  f <- nlm(response_fct,f)$estimate
+  f <- nlm(response_fct,f,check.analyticals=F)$estimate
   tryCatch(
     log_q <- -0.5*t(f)%*%solve(K,f)+response_list[[likelihood_fun]]$log_p(y,f)-
       0.5*log(det(K)*det(solve(K)+response_list[[likelihood_fun]]$hess_f(y,f)))
@@ -114,6 +114,7 @@ find_mode_laplace <- function(K, y, likelihood_fun){
 }
 
 #----implementation for the prediction-algorithm-------
+
 #' calculating the prediction probability
 #'
 #' @param f_mode values of the mode function, it must have the same length as y_learn
@@ -143,7 +144,7 @@ find_mode_laplace <- function(K, y, likelihood_fun){
 #' pred_laplace(f_mode = c(1,2),
 #'              X_learn = list(c(0,2), c(1,3)),
 #'              y_learn = c(0,1),
-#'              cov_fun = function(x,y) exp(-abs(x*y)),
+#'              cov_fun = function(x,y) exp(-abs(x%*%y)),
 #'              likelihood_fun = "probit",
 #'              x_input = c(1,0))
 #'
@@ -170,19 +171,17 @@ pred_laplace <- function(f_mode,X_learn, y_learn, cov_fun, likelihood_fun, x_inp
 
   W <- response_list[[likelihood_fun]]$hess_f(y_learn,f_mode)
   K <- cov_cross(X_learn, X_learn, cov_fun)
-  k_1 <- cov_cross(X_learn, as.list(x_input), cov_fun)
+  k_1 <- cov_cross(X_learn, list(x_input), cov_fun)
   f_bar <- t(k_1)%*%response_list[[likelihood_fun]]$del_f(y_learn,f_mode)
-  var_f <- cov_cross(as.list(x_input), as.list(x_input), cov_fun) -
+  var_f <- cov_cross(list(x_input), list(x_input), cov_fun) -
     t(k_1)%*%solve(K+solve(W+diag(10^(-10),nrow = nrow(K))),k_1)
-  n <- length(f_bar)
 
-#problem: more-dimensional integral
   integrand <- function(z){
     return(sapply(z, function(x)
-      response_list[[likelihood_fun]]$value(x,rep(1,n))*dnorm(x,mean=f_bar, sqrt(var_f))))
+      response_list[[likelihood_fun]]$value(x,1)*dnorm(x,mean=f_bar, sqrt(var_f))))
   }
 
-  pred_class_prop <- integrate(integrand, lower = rep(-Inf,n), upper = rep(Inf,n))$value
+  pred_class_prop <- integrate(integrand, lower = -Inf, upper = Inf)$value
   return(c(pred_class_prop = pred_class_prop))
 }
 
@@ -211,6 +210,12 @@ pred_laplace <- function(f_mode,X_learn, y_learn, cov_fun, likelihood_fun, x_inp
 #'                 cov_fun = function(x,y) exp(-abs(x*y)),
 #'                 likelihood_fun = "probit",
 #'                 x_input = 1)
+#'------------------------------------------------------------
+#'predict_laplace( X_learn = list(c(0,2), c(1,3)),
+#'                 y_learn = c(0,1),
+#'                 cov_fun = function(x,y) exp(-abs(x%*%y)),
+#'                 likelihood_fun = "probit",
+#'                 x_input = c(1,0))
 predict_laplace <- function(X_learn, y_learn, cov_fun, likelihood_fun, x_input){
   y_learn <- as.vector(y_learn)
   X_learn <- convert_to_list(X_learn, length(y_learn))

@@ -42,7 +42,7 @@ pred_laplace(f_mode = c(1,2),
 pred_laplace(f_mode = c(1,2),
              X_learn = list(c(0,2), c(1,3)),
              y_learn = c(0,1),
-             cov_fun = function(x,y) exp(-abs(x*y)),
+             cov_fun = function(x,y) exp(-abs(x\%*\%y)),
              likelihood_fun = "probit",
              x_input = c(1,0))
 

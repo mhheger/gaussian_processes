@@ -35,4 +35,10 @@ predict_laplace(X_learn = c(0,2),
                 cov_fun = function(x,y) exp(-abs(x*y)),
                 likelihood_fun = "probit",
                 x_input = 1)
+------------------------------------------------------------
+predict_laplace( X_learn = list(c(0,2), c(1,3)),
+                y_learn = c(0,1),
+                cov_fun = function(x,y) exp(-abs(x\%*\%y)),
+                likelihood_fun = "probit",
+                x_input = c(1,0))
 }
