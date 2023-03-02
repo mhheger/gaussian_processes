@@ -162,7 +162,7 @@ pred_laplace <- function(f_mode,X_learn, y_learn, cov_fun, likelihood_fun, x_inp
     stop("Cannot handle non-numeric inputs!")
   if(length(x_input)!=length(X_learn[[1]]))
     stop("Dimension of input data does not fit to dimension of training data")
-  if(typeof(cov)!="closure")
+  if(typeof(cov_fun)!="closure")
     stop("cov has to be a function")
   if(length(f_mode)!=length(y_learn))
     stop("dimension of f_mode doesn't fit to given learning data")
