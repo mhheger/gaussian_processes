@@ -37,6 +37,7 @@ predict_gauss <- function(X_learn, y_learn, cov, noise, x_input){
   #these values can be stored in a attribute of the gaussian process, they just
   #depend on the learning data
   K <- cov_cross(X_learn, X_learn, cov)
+  if(det(K)==0 && noise == 0) noise = 0.01
   L <- chol(K + diag(x=noise, nrow = nrow(K)), pivot = TRUE)
 
   tryCatch(

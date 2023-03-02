@@ -105,7 +105,7 @@ optimize_parameters <- function(X){
     names(opt$par) <- item$parameter
     l<-list(opt$par, opt$objective)
     solution <- c(solution,list(l) )
-    if(max>opt$objective){
+    if(max<opt$objective){
       max<-opt$objective
       best_parameters <- opt$par
       best_method <- item$name
@@ -131,7 +131,7 @@ help_opt <- function(par_value, X, par_names){
                     gamma = par_value["gamma"])
   }
   tryCatch(
-    X$get_prediction(0)$log_marginal_likelihood,
+    -X$get_prediction(0)$log_marginal_likelihood,
     error = function(cond) return(-Inf))
 }
 
