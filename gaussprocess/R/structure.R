@@ -12,8 +12,8 @@ R6::R6Class("gp",
                 }
                 private$X_learn <- c(unlist(private$X_learn), l)
                 private$y_learn <- c(private$y_learn, y)
-                self$set_cov("squared_exp")
                 self$set_noise(noise)
+                self$set_cov("squared_exp")
                 self$update_marginal_likelihood()
               },
               #getter functions for the private values
@@ -70,7 +70,7 @@ R6::R6Class("gp",
               },
               optim_parameter = function() {optimize_parameters(self)} ,
               plot = function(x_start, x_end, name_x="x", name_y="y",mode = T,title = NULL, col= "violet") {
-                if(private$input_dimension == 1){
+                if(private$input_dimension==1){
                   range_x <- seq(x_start,x_end,len = 100)
                   f <-c()
                   var <-c()
@@ -87,8 +87,8 @@ R6::R6Class("gp",
                   plot <- ggplot2::ggplot(plot_data, aes(x,y))+
                     geom_ribbon(aes(ymin = min_f,ymax =  max_f, fill = "grey60"))+
                     geom_line(aes(x,y))
-                  if(mode) plot + geom_point(data=input, aes(xx,yy))
-                  else plot
+                  if(mode) plot <- plot + geom_point(data=input, aes(xx,yy))
+                  ggplotly(plot)
                 }
               },
               update_marginal_likelihood = function(){
