@@ -1,5 +1,6 @@
 #-----definition of the different response functions---------
 
+
 logit <- list(
   value = function(y,f){
     if(! length(y)==length(f))
