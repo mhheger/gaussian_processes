@@ -32,7 +32,12 @@ R6::R6Class("gp",
                 }
                 return
               },
-
+              get_mean_fun = function(){
+                f <- private$mean_fun
+                if(is.numeric(f))
+                  return(function(x) f)
+                return(f)
+              },
               get_noise = function() private$noise,
               get_prediction = function(input) {predict_gauss2(self, x_input = input)},
               get_log_marginal_likelihood = function() self$log_marginal_likelihood,
@@ -67,6 +72,14 @@ R6::R6Class("gp",
               set_noise = function(noise){
                 if(noise<0| length(noise)!=1 | !is.numeric(noise)) stop("noise has to be a positive double value")
                 private$noise <- noise
+              },
+              set_mean_fun = function(f){
+                if((!typeof(f)=="closure" & !is.numeric(f)) | length(f) !=1)
+                  stop("mean_fun has to be either a function or a numeric vector
+                       of length 1")
+                if(typeof(f)=="closure" & length(args(f))>1)
+                  stop("mean function is just allowed to work with one input variable")
+                private$mean_fun <- f
               },
               optim_parameter = function() {optimize_parameters(self)} ,
               plot = function(x_start, x_end, name_x="x", name_y="y",mode = T,title = NULL, col= "violet") {
@@ -112,7 +125,7 @@ R6::R6Class("gp",
               X_learn = list(),
               y_learn = numeric(),
               input_dimension = NULL,
-              mean_fct = function(x) 0
+              mean_fun = 0
             )
 
 ) -> gp
