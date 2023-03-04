@@ -4,7 +4,7 @@
 \alias{cov_cross}
 \title{calculating the variance-covariance-matrix}
 \usage{
-cov_cross(x, y, cov)
+cov_cross(x, y, cov, ...)
 }
 \arguments{
 \item{x}{first list of input vectors}
@@ -12,6 +12,8 @@ cov_cross(x, y, cov)
 \item{y}{second list of input vectors}
 
 \item{cov}{covariance function, that returns a scalar}
+
+\item{...}{further parameters of cov, they have to be named.}
 }
 \value{
 variance-covariance-matrix of dimension 'length(x)':'length(y)'

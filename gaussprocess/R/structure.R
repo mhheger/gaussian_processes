@@ -1,3 +1,5 @@
+#-----Definition of the gp-class------------
+
 R6::R6Class("gp",
             public = list(
               add_data = function(x,y, noise=0) {
@@ -12,11 +14,12 @@ R6::R6Class("gp",
                 }
                 private$X_learn <- c(unlist(private$X_learn), l)
                 private$y_learn <- c(private$y_learn, y)
+                private$sigma <- numeric(private$input_dimension)
                 self$set_noise(noise)
                 self$set_cov("squared_exp")
                 self$update_marginal_likelihood()
               },
-              #getter functions for the private values
+#-----------getter functions for the private values-----------------------------
               get_K = function() private$K,
               get_cov = function() private$cov,
               get_data = function() {
@@ -40,9 +43,9 @@ R6::R6Class("gp",
               },
               get_noise = function() private$noise,
               get_prediction = function(input) {predict_gauss2(self, x_input = input)},
-              get_log_marginal_likelihood = function() self$log_marginal_likelihood,
+              get_log_marginal_likelihood = function() private$log_marginal_likelihood,
 
-              #setter functions for the private values
+#-----------setter functions for the private values-----------------------------
               #argument cov: name of the covariance function
               set_cov = function(cov){
                 private$covname <- cov
@@ -60,7 +63,7 @@ R6::R6Class("gp",
               },
               set_parameter = function(sigma=NULL, l=NULL, alpha=NULL, sigma0=NULL, gamma=NULL) {
                 # need to add checks in the real use functions
-                if(!is.null(sigma)) if(!is.na(sigma)) private$sigma <- sigma
+                if(all(!is.null(sigma))) if(all(!is.na(sigma))) private$sigma <- sigma
                 if(!is.null(l)) if(!is.na(l)) private$l <- l
                 if(!is.null(alpha)) if(!is.na(alpha)) private$alpha <- alpha
                 if(!is.null(sigma0)) if(!is.na(sigma0)) private$sigma0 <- sigma0
@@ -105,10 +108,9 @@ R6::R6Class("gp",
                 }
               },
               update_marginal_likelihood = function(){
-                private$log_marginal_likelihood <- self$get_prediction(1)$log_marginal_likelihood
+                private$log_marginal_likelihood <-
+                  unclass(self$get_prediction(numeric(private$input_dimension))$log_marginal_likelihood)
               }
-
-
             ),
 
             private = list(
@@ -130,6 +132,8 @@ R6::R6Class("gp",
 
 ) -> gp
 
+#------helper-functions-------------------
+
 init_cov <- function(covname, sigma=0, l=1, alpha=1, sigma0=1, gamma=1){
   force(sigma)
   force(l)
@@ -145,16 +149,7 @@ init_cov <- function(covname, sigma=0, l=1, alpha=1, sigma0=1, gamma=1){
   }
 }
 
-plot_with_confidence_band <- function(x,y,variance, color){
-  polygon(
-    c(x, rev(x)),
-    c(y+variance, rev(y)-rev(variance)),
-    col = color,
-    lty =1,
-    border = NA,
-    density = 100
-  )
-  lines(x,y, lwd = 2)
-}
+#------user-interface-functions----------
+
 
 

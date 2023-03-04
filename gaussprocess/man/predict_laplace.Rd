@@ -12,7 +12,7 @@ of points, a matrix or a data.frame. The number of represented points has to
 equal the length of y_learn}
 
 \item{y_learn}{output values of the learning data, it has to be a numeric vector
-with 1 and -1/0 as values}
+with 1 and -1 as values}
 
 \item{cov_fun}{function, such that two numeric vectors x,y of the same length will
 cause a scalar output}
@@ -31,14 +31,14 @@ using laplace-approximation for classification problems using gp
 }
 \examples{
 predict_laplace(X_learn = c(0,2),
-                y_learn = c(0,1),
-                cov_fun = function(x,y) exp(-abs(x*y)),
+                y_learn = c(-1,1),
+                cov_fun = function(x,y) exp(-sqrt(sum((x-y)^2))),
                 likelihood_fun = "probit",
                 x_input = 1)
 ------------------------------------------------------------
 predict_laplace( X_learn = list(c(0,2), c(1,3)),
-                y_learn = c(0,1),
-                cov_fun = function(x,y) exp(-abs(x\%*\%y)),
+                y_learn = c(-1,1),
+                cov_fun = function(x,y) exp(-sqrt(sum((x-y)^2))),
                 likelihood_fun = "probit",
                 x_input = c(1,0))
 }

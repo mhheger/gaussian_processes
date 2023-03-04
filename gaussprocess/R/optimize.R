@@ -86,12 +86,14 @@ init_cov <- function(covname, sigma=0, l=1, alpha=1, sigma0=1, gamma=1){
 
 
 optimize_parameters <- function(X){
-  max <- 0
-  best_parameters <- NULL
+  #------initalizing start values ----------
+  min <- Inf
+  best_parameters <- list(sigma = 0, l = 1, gamma = 1, alpha = 1, sigma0 = 1)
   best_method <- NULL
   solution <- list()
   start_parameters <- X$get_parameter()
 
+  #-----optimizing parameters for the different cov-functions-----
   for(item in cov_list){
     X$set_cov(item$name)
     par_item <- sapply(item$parameter, function(x) start_parameters[[x]])
@@ -105,18 +107,27 @@ optimize_parameters <- function(X){
     names(opt$par) <- item$parameter
     l<-list(opt$par, opt$objective)
     solution <- c(solution,list(l) )
-    if(max<opt$objective){
-      max<-opt$objective
-      best_parameters <- opt$par
+    if(min>opt$objective){
+      min<-opt$objective
+      for(element in item$parameter){
+        if(element == "sigma")
+          best_parameters[["sigma"]] <- unname(opt$par)
+        else
+          best_parameters[[element]] <- opt$par[element]
+      }
       best_method <- item$name
     }
   }
   names(solution)<- names(cov_list)
   print(best_method)
-  #checks for valid values
-  #X$set_parameter(best_parameters["sigma"],best_parameters["l"],best_parameters["alpha"],
-                 # best_parameters["sigma0"], best_parameters["gamma"])
-  #X$set_cov(best_method)
+  #-----setting optimal parameters---------
+  sigma <- best_parameters[["sigma"]]
+  gamma <- best_parameters[["gamma"]]
+  alpha <- best_parameters[["alpha"]]
+  l <- best_parameters[["l"]]
+  sigma0 <- best_parameters[["sigma0"]]
+  X$set_parameter(sigma = sigma, gamma = gamma, l = l, alpha = alpha, sigma0 = sigma0)
+  X$set_cov(best_method)
   return(solution)
 }
 
@@ -131,7 +142,7 @@ help_opt <- function(par_value, X, par_names){
                     gamma = par_value["gamma"])
   }
   tryCatch(
-    -X$get_prediction(0)$log_marginal_likelihood,
+    -X$get_log_marginal_likelihood(),
     error = function(cond) return(-Inf))
 }
 

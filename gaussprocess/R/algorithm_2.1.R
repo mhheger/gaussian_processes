@@ -9,8 +9,8 @@
 #' @param ... further information to pass to covariance function. They have to be named
 #'
 #' @return list of three elements f_predict var_f log_marginal_likelihood
-#' @param f_predict The predicted value
-#' @param var_f The variance
+#'  f_predict The predicted value
+#'  var_f The variance
 #' @export
 #'
 #' @examples
@@ -104,7 +104,7 @@ predict_gauss2 <- function(X, x_input){
 
   v <- solve(K + diag(x=noise, nrow = nrow(K)),k_1)
 
-  f_predict <- t(k_1)%*%alpha + mean(x_input)
+  f_predict <- t(k_1)%*%alpha + mean_fun(x_input)
   var_f <- cov(x_input,x_input)-t(k_1)%*%v
   log_marginal_likelihood <- -0.5* t(learn_data$y_learn) %*% alpha - log(det(K+ diag(x=noise, nrow = nrow(K))))-nrow(K)*0.5*log(2*pi)
 
