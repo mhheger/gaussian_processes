@@ -14,6 +14,15 @@
 #' @export
 #'
 #' @examples
+#' predict_gauss(  X_learn = 1:10,
+#'                 y_learn = sin(1:10) + 1:10 + rnorm(10),
+#'                 cov = function(x,y) exp(-x*y),
+#'                 noise = 1,
+#'                 x_input = 12,
+#'                 mean_fun = function(x) x
+#')
+#'
+#'
 predict_gauss <- function(X_learn, y_learn, cov, noise, x_input, mean_fun = 0, ...){
 
   #do some converting to get either atomic vectors or list of vectors
