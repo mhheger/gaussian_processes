@@ -6,6 +6,7 @@
 #' like cov(x,y) with x and y vectors of the same size and outputs a scalar.
 #' @param noise The assumed value of the variance of the noise of the learning data
 #' @param x_input The position we want to predict the value of the unknown function
+#' @param ... further information to pass to covariance function. They have to be named
 #'
 #' @return list of three elements f_predict var_f log_marginal_likelihood
 #' @param f_predict The predicted value
@@ -13,7 +14,16 @@
 #' @export
 #'
 #' @examples
-predict_gauss <- function(X_learn, y_learn, cov, noise, x_input){
+#' predict_gauss(  X_learn = 1:10,
+#'                 y_learn = sin(1:10) + 1:10 + rnorm(10),
+#'                 cov = function(x,y) exp(-x*y),
+#'                 noise = 1,
+#'                 x_input = 12,
+#'                 mean_fun = function(x) x
+#')
+#'
+#'
+predict_gauss <- function(X_learn, y_learn, cov, noise, x_input, mean_fun = 0, ...){
 
   #do some converting to get either atomic vectors or list of vectors
   y_learn <- as.vector(y_learn)
@@ -30,14 +40,23 @@ predict_gauss <- function(X_learn, y_learn, cov, noise, x_input){
   } else if(length(x_input)!=length(X_learn[[1]])) {
     stop("Dimension of input data does not fit to dimension of training data")
   }
+  if(!typeof(mean_fun) == "closure")
+    if(is.numeric(mean_fun) & length(mean_fun) ==1) {
+      mean_val <- mean_fun
+      mean_fun <- function(x){mean_val}
+    } else {
+      stop("mean has to be either a function or a numeric value")
+    }
+  y_learn <- y_learn - sapply(X_learn, mean_fun)
+
 
   #need: add sanity checks for cov , handle different type
   # of input data
 
   #these values can be stored in a attribute of the gaussian process, they just
   #depend on the learning data
-  K <- cov_cross(X_learn, X_learn, cov)
-  if(det(K)==0 && noise == 0) noise = 0.01
+  K <- cov_cross(X_learn, X_learn, cov,...)
+  if(det(K)==0 & noise ==0 ) noise = 0.1
   L <- chol(K + diag(x=noise, nrow = nrow(K)), pivot = TRUE)
 
   tryCatch(
@@ -45,11 +64,11 @@ predict_gauss <- function(X_learn, y_learn, cov, noise, x_input){
     error = function(cond) return(NaN)
   )
 
-  k_1 <- cov_cross(X_learn,list(x_input), cov)      # change of the vector-type of x
+  k_1 <- cov_cross(X_learn,list(x_input), cov,...)      # change of the vector-type of x
   v <- solve(K + diag(x=noise, nrow = nrow(K)),k_1)
 
-  f_predict <- t(k_1)%*%alpha
-  var_f <- cov(x_input,x_input)-t(k_1)%*%v
+  f_predict <- t(k_1)%*%alpha + mean_fun(x_input)
+  var_f <- cov(x_input,x_input,...)-t(k_1)%*%v
   log_marginal_likelihood <- -0.5* t(y_learn) %*% alpha - sum(log(diag(L)))-nrow(L)*0.5*2*pi
 
   results <- list("f_predict" = f_predict,
@@ -77,17 +96,17 @@ predict_gauss2 <- function(X, x_input){
   #L <- chol(K + diag(x=noise, nrow = nrow(K)), pivot = TRUE)
 
   #tryCatch(
-  # alpha <- .Internal(La_solve(K + diag(x=noise, nrow = nrow(K)),learn_data$y_learn, .Machine$double.eps)),
-  #error = function(cond) return(NaN)
+   # alpha <- .Internal(La_solve(K + diag(x=noise, nrow = nrow(K)),learn_data$y_learn, .Machine$double.eps)),
+    #error = function(cond) return(NaN)
   #)
   alpha <- solve(K + diag(x=noise, nrow = nrow(K)),y_learn)
   k_1 <- cov_cross(learn_data$X_learn,list(x_input), cov)      # change of the vector-type of x
 
   v <- solve(K + diag(x=noise, nrow = nrow(K)),k_1)
 
-  f_predict <- t(k_1)%*%alpha + mean_fun(x_input)
+  f_predict <- t(k_1)%*%alpha + mean(x_input)
   var_f <- cov(x_input,x_input)-t(k_1)%*%v
-  log_marginal_likelihood <- -0.5* t(learn_data$y_learn) %*% alpha - log(det(K+ diag(x=noise, nrow = nrow(K))))-nrow(K)*0.5*2*pi
+  log_marginal_likelihood <- -0.5* t(learn_data$y_learn) %*% alpha - log(det(K+ diag(x=noise, nrow = nrow(K))))-nrow(K)*0.5*log(2*pi)
 
   results <- list("f_predict" = f_predict,
                   "var_f" = var_f,
@@ -130,12 +149,12 @@ convert_to_list <- function(x, n){
 #' @param x first list of input vectors
 #' @param y second list of input vectors
 #' @param cov covariance function, that returns a scalar
-#'
+#' @param ... further parameters of cov, they have to be named.
 #' @return variance-covariance-matrix of dimension 'length(x)':'length(y)'
 #'
 #' @examples
 #'
-cov_cross <- function(x,y,cov){ #returns the variance-covariance-matrix
+cov_cross <- function(x,y,cov,...){ #returns the variance-covariance-matrix
   if(!is.list(x) | !is.list(y) | !is.numeric(x[[1]])| !is.numeric(y[[1]])){
     stop("Input has to be a list of numerical vectors!")
   }
@@ -143,7 +162,7 @@ cov_cross <- function(x,y,cov){ #returns the variance-covariance-matrix
   m <- matrix(nrow = length(x), ncol = length(y))
   for (i in seq_along(x)){
     for (j in seq_along(y)){
-      m[i,j] <- cov(x[[i]],y[[j]])
+      m[i,j] <- cov(x[[i]],y[[j]],...)
     }
   }
   return(m)
