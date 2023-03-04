@@ -14,7 +14,7 @@ of points, a matrix or a data.frame. The number of represented points has to
 equal the length of y_learn}
 
 \item{y_learn}{output values of the learning data, it has to be a numeric vector
-with 1 and -1/0 as values}
+with 1 and -1 as values}
 
 \item{cov_fun}{function, such that two numeric vectors x,y of the same length will
 cause a scalar output}
@@ -34,15 +34,15 @@ calculating the prediction probability
 \examples{
 pred_laplace(f_mode = c(1,2),
              X_learn = c(0,2),
-             y_learn = c(0,1),
-             cov_fun = function(x,y) exp(-abs(x*y)),
+             y_learn = c(-1,1),
+             cov_fun = function(x,y)exp(-sqrt(sum((x-y)^2))),
              likelihood_fun = "probit",
              x_input = 1)
 -----------------------------------------------
 pred_laplace(f_mode = c(1,2),
              X_learn = list(c(0,2), c(1,3)),
-             y_learn = c(0,1),
-             cov_fun = function(x,y) exp(-abs(x*y)),
+             y_learn = c(-1,1),
+             cov_fun = function(x,y) exp(-sqrt(sum((x-y)^2))),
              likelihood_fun = "probit",
              x_input = c(1,0))
 

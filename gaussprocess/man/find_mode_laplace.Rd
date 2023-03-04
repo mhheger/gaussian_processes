@@ -7,17 +7,25 @@
 find_mode_laplace(K, y, likelihood_fun)
 }
 \arguments{
-\item{K}{covariance-matrix of dimension (n,n)}
+\item{K}{covariance-variance-matrix of dimension (n,n)}
 
-\item{y}{output-vector of length n, it's values are just allowed to be -1 or 1}
+\item{y}{output-vector of length n, its values are just allowed
+to be -1 or 1}
 
-\item{likelihood_fun}{character-vector, name of the response function,
-either "probit" or "logit"}
+\item{likelihood_fun}{name of the response function, that should be used
+either 'probit' or 'logit'}
 }
 \value{
-f_mode: value of mode function,
-         log_marginal_likelihood: logarithmic marginal likelihood of the result
+mode: value of the mode function
+         log_marginal_likelihood: logarithmic marginal likelihood of the
+         result
 }
 \description{
 finding value of mode function using laplace-approximation
+}
+\examples{
+find_mode_laplace(  K = matrix( 1:4, nrow= 2),
+                    y = c(1,-1),
+                    likelihood_fun = "probit"
+                    )
 }

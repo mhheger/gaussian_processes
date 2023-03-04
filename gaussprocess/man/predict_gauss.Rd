@@ -4,7 +4,7 @@
 \alias{predict_gauss}
 \title{predict_gauss}
 \usage{
-predict_gauss(X_learn, y_learn, cov, noise, x_input)
+predict_gauss(X_learn, y_learn, cov, noise, x_input, mean_fun = 0, ...)
 }
 \arguments{
 \item{X_learn}{The learning data, given as an matrix, a list of vectors or a tibble}
@@ -18,6 +18,8 @@ like cov(x,y) with x and y vectors of the same size and outputs a scalar.}
 
 \item{x_input}{The position we want to predict the value of the unknown function}
 
+\item{...}{further information to pass to covariance function. They have to be named}
+
 \item{f_predict}{The predicted value}
 
 \item{var_f}{The variance}
@@ -27,4 +29,15 @@ list of three elements f_predict var_f log_marginal_likelihood
 }
 \description{
 predict_gauss
+}
+\examples{
+predict_gauss(  X_learn = 1:10,
+                y_learn = sin(1:10) + 1:10 + rnorm(10),
+                cov = function(x,y) exp(-x*y),
+                noise = 1,
+                x_input = 12,
+                mean_fun = function(x) x
+)
+
+
 }
