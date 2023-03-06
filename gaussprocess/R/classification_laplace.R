@@ -260,3 +260,37 @@ predict_laplace <- function(X_learn, y_learn, cov_fun, likelihood_fun, x_input){
 }
 
 
+
+#' Using Laplace-Approximation inside a gp-object
+#'
+#' @param X object of class 'gp' with modus 'classification'
+#' @param x_input numerical input for getting a prediction
+#'
+#' @return numeric vector, that describes the probability of the class_label 1 at point x_input
+#' @export
+#'
+predict_laplace2 <- function(X, x_input){
+  learn_data <- X$get_data()
+  K <- X$get_K()
+  cov_fun <- X$get_cov()
+  likelihood_fun <- X$get_likelihood_fun()
+  f_mode <- X$get_mode_fun()
+
+  pred <- pred_laplace(f_mode = f_mode,
+                       X_learn = learn_data$X_learn,
+                       y_learn = learn_data$y_learn,
+                       cov_fun = cov_fun,
+                       likelihood_fun = likelihood_fun,
+                       x_input = x_input)
+
+  if(is.na(pred)){
+    warning("The value was not evaluable, so the returned value 0.5 is not trustable")
+    return(0.5)
+  } else{
+    return(pred)
+  }
+}
+
+
+
+
