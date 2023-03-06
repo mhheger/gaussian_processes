@@ -193,6 +193,8 @@ pred_laplace <- function(f_mode,X_learn, y_learn, cov_fun, likelihood_fun, x_inp
     stop("dimension of f_mode doesn't fit to given learning data")
   if(!is.numeric(f_mode))
     stop("f_mode must be numeric")
+
+
   n <- length(y_learn)
   W <- -1* response_list[[likelihood_fun]]$hess_f(y_learn,f_mode)
   K <- cov_cross(X_learn, X_learn, cov_fun)
@@ -201,15 +203,19 @@ pred_laplace <- function(f_mode,X_learn, y_learn, cov_fun, likelihood_fun, x_inp
   f_bar <- t(k_1)%*%response_list[[likelihood_fun]]$del_f(y_learn,f_mode)
   v <- backsolve(L, sqrt(W)%*%k_1)
   var_f <- cov_cross(list(x_input), list(x_input), cov_fun) - t(v)%*%v
+
   integrand <- function(z){
     return(sapply(z, function(x)
       response_list[[likelihood_fun]]$value(x,1)*dnorm(x,mean=f_bar, sqrt(var_f))))
   }
   tryCatch(
-    pred_class_prop <- integrate(integrand, lower = -Inf, upper = Inf)$value,
+    {pred_class_prop <- integrate(integrand, lower = -Inf, upper = Inf)$value
+    return(c(pred_class_prop = pred_class_prop))
+    },
     error = function(cond) return(NA)
   )
-  return(c(pred_class_prop = pred_class_prop))
+
+
 }
 
 #----overall function for solving the classification problem -----
