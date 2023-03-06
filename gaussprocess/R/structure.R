@@ -2,7 +2,7 @@
 
 R6::R6Class("gp",
             public = list(
-              add_data = function(x,y, noise=0) {
+              add_data = function(x,y, noise=0.1) {
                 l <- convert_to_list(x, length(y))
                 if(!is.null(private$input_dimension)){
                   if(length(l[[1]])!= private$input_dimension){
@@ -12,14 +12,19 @@ R6::R6Class("gp",
                 } else {
                   private$input_dimension <- length(l[[1]])
                 }
-                private$X_learn <- c(unlist(private$X_learn), l)
-                private$y_learn <- c(private$y_learn, y)
+                private$X_learn <- c(private$X_learn, l)
+                private$y_learn <- c(private$y_learn, unlist(y))
                 private$sigma <- numeric(private$input_dimension)
                 self$set_noise(noise)
-                self$set_cov("squared_exp")
+                if(is.null(private$covname)){
+                  self$set_cov("squared_exp")
+                } else {
+                  self$set_cov(private$covname)
+                }
                 self$update_marginal_likelihood()
               },
 #-----------getter functions for the private values-----------------------------
+              get_cov_name = function() private$covname,
               get_K = function() private$K,
               get_cov = function() private$cov,
               get_data = function() {
@@ -104,7 +109,7 @@ R6::R6Class("gp",
                     geom_ribbon(aes(ymin = min_f,ymax =  max_f, fill = "grey60"))+
                     geom_line(aes(x,y))
                   if(mode) plot <- plot + geom_point(data=input, aes(xx,yy))
-                  ggplotly(plot)
+                  plot
                 }
               },
               update_marginal_likelihood = function(){
