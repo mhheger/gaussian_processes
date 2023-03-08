@@ -193,6 +193,8 @@ pred_laplace <- function(f_mode,X_learn, y_learn, cov_fun, likelihood_fun, x_inp
     stop("dimension of f_mode doesn't fit to given learning data")
   if(!is.numeric(f_mode))
     stop("f_mode must be numeric")
+
+
   n <- length(y_learn)
   W <- -1* response_list[[likelihood_fun]]$hess_f(y_learn,f_mode)
   K <- cov_cross(X_learn, X_learn, cov_fun)
@@ -201,15 +203,19 @@ pred_laplace <- function(f_mode,X_learn, y_learn, cov_fun, likelihood_fun, x_inp
   f_bar <- t(k_1)%*%response_list[[likelihood_fun]]$del_f(y_learn,f_mode)
   v <- backsolve(L, sqrt(W)%*%k_1)
   var_f <- cov_cross(list(x_input), list(x_input), cov_fun) - t(v)%*%v
+
   integrand <- function(z){
     return(sapply(z, function(x)
       response_list[[likelihood_fun]]$value(x,1)*dnorm(x,mean=f_bar, sqrt(var_f))))
   }
   tryCatch(
-    pred_class_prop <- integrate(integrand, lower = -Inf, upper = Inf)$value,
+    {pred_class_prop <- integrate(integrand, lower = -Inf, upper = Inf)$value
+    return(c(pred_class_prop = pred_class_prop))
+    },
     error = function(cond) return(NA)
   )
-  return(c(pred_class_prop = pred_class_prop))
+
+
 }
 
 #----overall function for solving the classification problem -----
@@ -258,39 +264,4 @@ predict_laplace <- function(X_learn, y_learn, cov_fun, likelihood_fun, x_input){
     return(pred)
   }
 }
-
-
-
-#' Using Laplace-Approximation inside a gp-object
-#'
-#' @param X object of class 'gp' with modus 'classification'
-#' @param x_input numerical input for getting a prediction
-#'
-#' @return numeric vector, that describes the probability of the class_label 1 at point x_input
-#' @export
-#'
-predict_laplace2 <- function(X, x_input){
-  learn_data <- X$get_data()
-  K <- X$get_K()
-  cov_fun <- X$get_cov()
-  likelihood_fun <- X$get_likelihood_fun()
-  f_mode <- X$get_mode_fun()
-
-  pred <- pred_laplace(f_mode = f_mode,
-                       X_learn = learn_data$X_learn,
-                       y_learn = learn_data$y_learn,
-                       cov_fun = cov_fun,
-                       likelihood_fun = likelihood_fun,
-                       x_input = x_input)
-
-  if(is.na(pred)){
-    warning("The value was not evaluable, so the returned value 0.5 is not trustable")
-    return(0.5)
-  } else{
-    return(pred)
-  }
-}
-
-
-
 

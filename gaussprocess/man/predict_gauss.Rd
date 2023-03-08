@@ -18,14 +18,15 @@ like cov(x,y) with x and y vectors of the same size and outputs a scalar.}
 
 \item{x_input}{The position we want to predict the value of the unknown function}
 
+\item{mean_fun}{function, that takes one numeric vector as argument and returns
+a numeric value}
+
 \item{...}{further information to pass to covariance function. They have to be named}
-
-\item{f_predict}{The predicted value}
-
-\item{var_f}{The variance}
 }
 \value{
 list of three elements f_predict var_f log_marginal_likelihood
+ f_predict The predicted value
+. var_f The variance
 }
 \description{
 predict_gauss

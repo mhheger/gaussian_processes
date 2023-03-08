@@ -6,11 +6,13 @@
 #' like cov(x,y) with x and y vectors of the same size and outputs a scalar.
 #' @param noise The assumed value of the variance of the noise of the learning data
 #' @param x_input The position we want to predict the value of the unknown function
+#' @param mean_fun function, that takes one numeric vector as argument and returns
+#' a numeric value
 #' @param ... further information to pass to covariance function. They have to be named
 #'
 #' @return list of three elements f_predict var_f log_marginal_likelihood
-#' @param f_predict The predicted value
-#' @param var_f The variance
+#'  f_predict The predicted value
+#'. var_f The variance
 #' @export
 #'
 #' @examples
