@@ -2,7 +2,7 @@
 % Please edit documentation in R/classification_laplace.R
 \name{find_mode_laplace}
 \alias{find_mode_laplace}
-\title{finding value of mode function using laplace-approximation}
+\title{finding value of mode function using binary laplace-approximation}
 \usage{
 find_mode_laplace(K, y, likelihood_fun)
 }
@@ -21,7 +21,7 @@ mode: value of the mode function
          result
 }
 \description{
-finding value of mode function using laplace-approximation
+finding value of mode function using binary laplace-approximation
 }
 \examples{
 find_mode_laplace(  K = matrix( 1:4, nrow= 2),

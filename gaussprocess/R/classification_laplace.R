@@ -1,4 +1,5 @@
-#-----definition of the different response functions---------
+# binary laplace approximation
+##definition of the different response functions---------
 
 logit <- list(
   value = function(y,f){
@@ -78,8 +79,8 @@ probit <- list(
 )
 response_list <- list(logit =logit, probit = probit)
 
-
-#' finding value of mode function using laplace-approximation
+## mode finding binary laplace
+#' finding value of mode function using binary laplace-approximation
 #'
 #' @param K covariance-variance-matrix of dimension (n,n)
 #' @param y output-vector of length n, its values are just allowed
@@ -138,7 +139,7 @@ find_mode_laplace <- function(K, y, likelihood_fun){
 }
 
 
-#----implementation for the prediction-algorithm-------
+##implementation for the binary prediction-algorithm-------
 
 #' calculating the prediction probability
 #'
@@ -218,7 +219,7 @@ pred_laplace <- function(f_mode,X_learn, y_learn, cov_fun, likelihood_fun, x_inp
 
 }
 
-#----overall function for solving the classification problem -----
+##overall function for solving the binary classification problem -----
 
 #' using laplace-approximation for classification problems using gp
 #'
@@ -264,4 +265,298 @@ predict_laplace <- function(X_learn, y_learn, cov_fun, likelihood_fun, x_input){
     return(pred)
   }
 }
+
+
+# Multiclass Laplace ------------------------------------------------------
+
+## Mode-finding multiclass laplace  ----------------------------------------
+
+#' Mode-finding for multiclass laplace approximation
+#'
+#' @param K_list list of of variance-covariance matrices. Each class label gets
+#' it's own matrix
+#' @param y vector of resulting class labels, it's values are either 0 or 1.
+#'
+#' @return list of two elements:
+#' - mode: numerical vector with mode function values
+#' - log_marginal_likelihood: value of the logarithmic marginal likelihood
+#' @export
+#' @details
+#' Assuming n points, for which the right labeling is known, and C possible
+#' classes, than this vector is build up like this:
+#' - for each class, we consider the vector y_c, which has length n and whose
+#' entries are defined as 1, if point i belongs to class c, or 0 otherwise.
+#'- y is created by joining all y_c - vectors.
+#'
+#' @examples
+#' #Assuming 2 classes and 3 learning points
+#' K_list <- list(
+#'   diag(c(1,2,3)),
+#'   diag(c(0.4,2.3,1))
+#' )
+#'
+#' y <- c(0,0,1,1,1,0)
+#'
+#' find_mode_mc_laplace(K_list, y)
+find_mode_mc_laplace <- function(K_list, y){     #K list of matrices, y output (0,1)
+  n <- nrow(K_list[[1]])
+  C <- length(K_list)
+  f <- numeric(n*C)
+  precision <- 10 ^(-30)
+
+  for(iterations in 1:100){
+    E_list <- list()
+    PI <- list()
+    z <- numeric(C)
+    p <- sapply(seq_len(n*C), function(i){
+      exp(f[i])/(sum(exp(f[seq_len(n*C)%%n == i %% n ])))
+    })
+
+    objective <- function(a,f){
+      -0.5 * sum(a * f)+ sum(y * f) + sum(log(sapply(seq_len(C), function(i){
+        (sum(exp(f[seq_len(n*C)%%n == i %% n ])))
+      })))
+    }
+
+    objective1 <- 0
+
+    for(c in seq_len(C)){
+      p_c <- p[((c-1)*n +1) : (c*n)]
+      D_c <- diag(p_c)
+      PI[[c]] <- D_c
+      L <- chol(diag(nrow = n)+sqrt(D_c)%*%K_list[[c]]%*%sqrt(D_c))
+      E_c <- backsolve(sqrt(D_c)%*%t(L), (backsolve(L, sqrt(D_c))))
+      E_list[[c]] <- E_c
+      z[c] <- sum(log(diag(L)))
+    }
+    M <- diag(0, nrow= n)
+    for(item in E_list){
+      M <- M + item
+    }
+    M <- chol(M)
+    PI_matrix <- PI[[1]]
+    for(item in 2:C){
+      PI_matrix <- rbind(PI_matrix, PI[[item]])
+    }
+    R <- diag(nrow = n)
+    for(item in 2:C){
+      R <- rbind(R, diag(nrow = n))
+    }
+
+    E <- diag_block_matrix(E_list)
+    K <- diag_block_matrix(K_list)
+    D <- diag(p)
+
+    b <- (D-PI_matrix %*% t(PI_matrix)) %*% f + y - p
+    c <- E %*% K %*% b
+    a <- b - c + E %*% R %*%backsolve(( t(M)), backsolve(M, t(R)%*%c))
+    f = K%*%a
+
+    objective0 <- objective(a,f)
+    if(abs(objective0-objective1)<precision)
+      break
+    objective0 <- objective1
+
+  }
+  log_q <- objective(a,f) - sum(z)
+  res <- list(mode = f, log_marginal_likelihood = log_q)
+  if(iterations ==100)
+    attr(res, "convergence") <- FALSE
+  else
+    attr(res, "convergence") <- TRUE
+  return(res)
+}
+
+
+## building block matrices  ------------------------------------------------
+
+#' Building block matrices
+#'
+#' @param matrix_list list of quadratic matrices
+#'
+#' @return one diagonal block matrix
+#' @export
+#'
+#' @examples
+#' l <- list(
+#'   matrix(1:9, nrow = 3),
+#'   diag(4),
+#'   diag(c(1,2,3,3,3)),
+#'   matrix(90:98, nrow = 3)
+#' )
+#'
+#' diag_block_matrix(l)
+#'
+#'
+diag_block_matrix <- function(matrix_list){
+  dims <- sapply(matrix_list, nrow)
+  M <- diag(sum(dims))
+  curr_pos <- 1
+  for(i in seq_along(dims)){
+    end_pos <- curr_pos-1 + dims[i]
+    M[curr_pos:end_pos,curr_pos:end_pos ] <- matrix_list[[i]]
+    curr_pos <- end_pos +1
+  }
+  return(M)
+}
+
+## internal prediction algorithm  ----------------------------------------
+
+
+#' Predictions using multiclass-laplace-approximations
+#'
+#' @param X_learn list of input points
+#' @param K_list  list of variance-covariance-matrices
+#' @param f_mode numeric vector of mode function values
+#' @param cov_list list of closures, that fullfill the characteristics of a
+#' covariance function
+#' @param x_input numeric vector, coordinates of the input, where we want to get
+#' the prediction
+#' @param n_sample number of samples to approximate the probability of the class
+#' labels
+#'
+#' @return vector describing the probabilities of the different labels
+#' @export
+#'
+#' @examples
+#' x <- 1:100
+#' y <-as.integer(x<50)
+#' y <- c ( y, as.integer(x>50))
+#' X_learn <- as.list(x)
+#' cov_list <- list(
+#'   function(x,y) exp(- sqrt(sum((x-y)^2))),
+#'   function(x,y) exp(- sqrt(sum((x-y)^2))),
+#' )
+#'
+#' K <- list(
+#'  cov_cross(X_learn, X_learn,cov_list[[1]]),
+#'  cov_cross(X_learn, X_learn,cov_list[[2]])
+#' )
+#'
+#'f_mode <- find_mode_mc_laplace(K,y)$mode
+#'
+#'pred_mc_laplace(X_learn, K, f_mode, cov_list, 6)
+pred_mc_laplace <- function(X_learn, K_list, f_mode, cov_list, x_input, n_sample = 1000){
+  n <- nrow(K_list[[1]])
+  C <- length(K_list)
+  p <- sapply(seq_len(n*C), function(i){
+    exp(f_mode[i])/(sum(exp(f_mode[seq_len(n*C)%%n == i %% n ])))
+  })
+  E_list <- list()
+  PI <- list()
+  mu <- numeric(C)
+  Sigma <- diag(C)
+  num_samples <- n_sample
+
+  for(c in seq_len(C)){
+    p_c <- p[((c-1)*n +1) : (c*n)]
+    D_c <- diag(p_c)
+    PI[[c]] <- D_c
+    L <- chol(diag(nrow = n)+sqrt(D_c)%*%K_list[[c]]%*%sqrt(D_c))
+    E_c <- backsolve(sqrt(D_c)%*%t(L), (backsolve(L, sqrt(D_c))))
+    E_list[[c]] <- E_c
+  }
+
+  R <- diag(nrow = n)
+  for(item in 2:C){
+    R <- rbind(R, diag(nrow = n))
+  }
+
+  M <- diag(0, nrow= n)
+  for(item in E_list){
+    M <- M + item
+  }
+  M <- chol(M)
+
+  for( c in seq_len(C)){
+    k_c <- cov_cross(X_learn, list(x_input), cov_list[[c]])
+    mu[c] <-  t(y[((c-1)*n+1):(c*n)])%*%k_c
+    b <- E_list[[c]]%*% k_c
+    g <- E_list[[c]]%*%(backsolve(t(M), backsolve(M, b)))
+
+    for(d in seq_len(C)){
+      k_d <- cov_cross(X_learn, list(x_input), cov_list[[d]])
+      Sigma[c,d] <- t(g) %*% k_d
+    }
+    Sigma[c,c] <- Sigma[c,c] + cov_cross(list(x_input), list(x_input), cov_list[[c]]) -
+      t(b)%*%k_c
+  }
+
+  pred <- numeric(C)
+  for(i in seq_len(num_samples)){
+    f <- mnormt::rmnorm(1, mean = mu, Sigma)
+    pred <- pred + exp(f)/sum(exp(f))
+  }
+
+  pred <- pred / num_samples
+
+  return(pred)
+}
+
+
+
+## Class for more-user friendly multiclass laplace approximation
+R6::R6Class("gp_classification",
+            public = list(
+              initialize = function(n, covs = rep("squared_exp",n)){
+                private$number_categories <- n
+                for (i in seq_len(n)){
+                  private$gp_list[[i]] <- gp$new()
+                  private$gp_list[[i]]$set_cov(covs[[i]])
+                  private$covariances[[i]]<-private$gp_list[[i]]$get_cov()
+                }
+              },
+              add_data = function(X_learn, y){
+                n <- private$number_categories
+                y <- unlist(y)
+                for(i in seq_len(n)){
+                  y_i <- y[seq_len(length(y))%%n == i %% n]
+                  private$gp_list[[i]]$add_data(X_learn, y_i)
+                }
+                X_learn <- convert_to_list(X_learn, length(y)/n )
+                private$y_learn <- c(private$y_learn,y)
+                private$X_learn <- c(private$X_learn,X_learn)
+                private$set_mode()
+              },
+              get_K_list = function(){
+                n <- private$number_categories
+                l <- list()
+                for(i in seq_len(n)){
+                  l[[i]] <- private$gp_list[[i]]$get_K()
+                }
+                return(l)
+              },
+              get_X = function()
+                return(private$X_learn),
+              get_y = function()
+                return(private$y_learn),
+              get_covariances = function()
+                return(private$covariances),
+              get_prediction = function(x_input, n_samples = 1000){
+                f_mode <- private$f_mode
+                K_list <- mc1$get_K_list()
+                covs <- mc1$get_covariances()
+                y <- mc1$get_y()
+                X_learn <- mc1$get_X()
+                if(is.null(f_mode)) stop("You have to add data first!")
+
+                pred_mc_laplace(X_learn, K_list, f_mode, covs, x_input, n_samples )
+              }
+            ),
+            private = list(
+              set_mode = function(){
+                K_list <- mc1$get_K_list()
+                y <- mc1$get_y()
+                res <- find_mode_mc_laplace(mc1$get_K_list(),mc1$get_y())
+                private$f_mode <- res$mode
+              },
+              number_categories = NULL,
+              X_learn = NULL,
+              y_learn = NULL,
+              gp_list = list(),
+              covariances = list(),
+              f_mode = NULL
+            )
+) -> gp_classifikation
+
 
