@@ -24,7 +24,7 @@ R6::R6Class("Optimization",
                 if ("l" %in% names(hyper)) l <- hyper[[1]]
                 if (length(hyper) < 2) {
                   if ("sigma0" %in% names(hyper)) sigma0 <- hyper[[1]]
-                  if ("sigam" %in% names(hyper)) sigma <- hyper[[1]]
+                  if ("sigma" %in% names(hyper)) sigma <- hyper[[1]]
                 } else {
                   if ("gamma" %in% names(hyper)) gamma <- hyper[[2]]
                   if ("alpha" %in% names(hyper)) alpha <- hyper[[2]]
