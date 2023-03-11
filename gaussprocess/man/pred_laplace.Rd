@@ -38,7 +38,7 @@ pred_laplace(f_mode = c(1,2),
              cov_fun = function(x,y)exp(-sqrt(sum((x-y)^2))),
              likelihood_fun = "probit",
              x_input = 1)
------------------------------------------------
+# -----------------------------------------------
 pred_laplace(f_mode = c(1,2),
              X_learn = list(c(0,2), c(1,3)),
              y_learn = c(-1,1),

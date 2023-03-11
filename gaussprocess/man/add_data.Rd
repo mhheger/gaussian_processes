@@ -33,6 +33,7 @@ to save the changes by yourself. If you do not want to have does changes,
 then you might have to clone the object before passing it to 'add_data'
 }
 \examples{
+library(dplyr) #to include pipe-operator
 # Generating input data
 input_x <- 1:100
 input_y <- sin(0.5*input_x)

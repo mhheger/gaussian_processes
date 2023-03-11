@@ -23,6 +23,8 @@ If you are interested in the parameters that are used by the different
 available covariance functions, visit the vignette of this package
 }
 \examples{
+library(dplyr) #to include pipe-operator
+
 p1 <- new.gp() \%>\% add_data(matrix(c(1:10, 2:11, 3:12),nrow=3), 1:10)
 
 get_parameter(p1)

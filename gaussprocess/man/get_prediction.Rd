@@ -24,6 +24,8 @@ to the overall setup
 Getting prediction using Gaussian Process Model
 }
 \examples{
+library(dplyr) #to include pipe-operator
+
 p <- new.gp() \%>\%  add_data(1:10, 1:10)
 get_prediction(p,11)
 

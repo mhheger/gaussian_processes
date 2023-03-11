@@ -22,6 +22,6 @@ Adding a mean function to a gp object
 \examples{
 p <- new.gp()
 add_data(p, 1:10,1:10)
-set_mean(p, function(x) x)
+set_mean_fun(p, function(x) x)
 
 }

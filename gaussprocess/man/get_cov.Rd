@@ -20,6 +20,8 @@ the input_dimension of the used gp-object.
 Getting the used covariance function
 }
 \examples{
+library(dplyr) #to include pipe-operator
+
 p <- new.gp() \%>\%
      add_data(1:3, 1:3)
 f <- get_cov(p)

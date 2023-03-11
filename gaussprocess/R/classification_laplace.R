@@ -166,7 +166,7 @@ find_mode_laplace <- function(K, y, likelihood_fun){
 #'              cov_fun = function(x,y)exp(-sqrt(sum((x-y)^2))),
 #'              likelihood_fun = "probit",
 #'              x_input = 1)
-#' -----------------------------------------------
+#'# -----------------------------------------------
 #' pred_laplace(f_mode = c(1,2),
 #'              X_learn = list(c(0,2), c(1,3)),
 #'              y_learn = c(-1,1),
@@ -245,7 +245,7 @@ pred_laplace <- function(f_mode,X_learn, y_learn, cov_fun, likelihood_fun, x_inp
 #'                 cov_fun = function(x,y) exp(-sqrt(sum((x-y)^2))),
 #'                 likelihood_fun = "probit",
 #'                 x_input = 1)
-#'------------------------------------------------------------
+#'#------------------------------------------------------------
 #'predict_laplace( X_learn = list(c(0,2), c(1,3)),
 #'                 y_learn = c(-1,1),
 #'                 cov_fun = function(x,y) exp(-sqrt(sum((x-y)^2))),
@@ -313,7 +313,7 @@ find_mode_mc_laplace <- function(K_list, y){     #K list of matrices, y output (
     })
 
     objective <- function(a,f){
-      -0.5 * sum(a * f)+ sum(y * f) + sum(log(sapply(seq_len(C), function(i){
+      -0.5 * sum(a * f)+ sum(y * f) - sum(log(sapply(seq_len(C), function(i){
         (sum(exp(f[seq_len(n*C)%%n == i %% n ])))
       })))
     }
@@ -419,23 +419,23 @@ diag_block_matrix <- function(matrix_list){
 #' @export
 #'
 #' @examples
-#' x <- 1:100
-#' y <-as.integer(x<50)
-#' y <- c ( y, as.integer(x>50))
+#' x <- 1:50
+#' y <-as.integer(x<5)
+#' y <- c ( y, as.integer(x>5))
 #' X_learn <- as.list(x)
-#' cov_list <- list(
-#'   function(x,y) exp(- sqrt(sum((x-y)^2))),
-#'   function(x,y) exp(- sqrt(sum((x-y)^2))),
+#' covariance_list <- list(
+#'   function(x,y) exp(- 0.5*sqrt(sum((x-y)^2))),
+#'   function(x,y) exp(- 0.5*sqrt(sum((x-y)^2)))
 #' )
 #'
 #' K <- list(
-#'  cov_cross(X_learn, X_learn,cov_list[[1]]),
-#'  cov_cross(X_learn, X_learn,cov_list[[2]])
+#'  cov_cross(X_learn, X_learn,covariance_list[[1]]),
+#'  cov_cross(X_learn, X_learn,covariance_list[[2]])
 #' )
 #'
 #'f_mode <- find_mode_mc_laplace(K,y)$mode
 #'
-#'pred_mc_laplace(X_learn, K, f_mode, cov_list, 6)
+#'pred_mc_laplace(X_learn, K, f_mode, covariance_list, 20)
 pred_mc_laplace <- function(X_learn, K_list, f_mode, cov_list, x_input, n_sample = 1000){
   n <- nrow(K_list[[1]])
   C <- length(K_list)
@@ -557,6 +557,6 @@ R6::R6Class("gp_classification",
               covariances = list(),
               f_mode = NULL
             )
-) -> gp_classifikation
+) -> gp_classification
 
 

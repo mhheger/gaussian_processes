@@ -1,5 +1,4 @@
 #-----Definition of the gp-class------------
-
 R6::R6Class("gp",
             public = list(
               #--------adding data---------------
@@ -118,8 +117,9 @@ R6::R6Class("gp",
                 if(typeof(f)=="closure" & length(as.list(args(f)))!=2)
                   stop("mean function is just allowed to work with one input variable")
 
-                if(typeof(f)=="closure" & length(f(numeric(private$input_dimension)))!=1)
-                  stop("mean function is just allowed to output numeric values of length 1")
+                if(typeof(f)=="closure")
+                  if(length(f(numeric(private$input_dimension)))!=1)
+                    stop("mean function is just allowed to output numeric values of length 1")
                 private$mean_fun <- f
               },
 
@@ -351,7 +351,7 @@ init_cov <- function(covname, sigma=0, l=1, alpha=1, sigma0=1, gamma=1){
 #'
 #' @examples
 #' p1 <- new.gp()
-#' add_data(p1, x = 1:10, y = 2:11)
+#' add_data(p1, X_learn = 1:10, y = 2:11)
 #' print(p1)
 #'
 new.gp <- function(mode="regression", cov_fun = "squared_exp", response_fun = "probit"){
@@ -406,6 +406,7 @@ new.gp <- function(mode="regression", cov_fun = "squared_exp", response_fun = "p
 #' then you might have to clone the object before passing it to 'add_data'
 #'
 #' @examples
+#' library(dplyr) #to include pipe-operator
 #' # Generating input data
 #' input_x <- 1:100
 #' input_y <- sin(0.5*input_x)
@@ -459,12 +460,13 @@ add_data <- function(obj, X_learn, y, noise = 0.1){
 #' @export
 #' @seealso set_cov() for setting the covariance function
 #' @examples
+#' library(dplyr) #to include pipe-operator
 #' p <- new.gp() %>%
 #'      add_data(1:10,1:10)
 #'get_cov_name(p)
 #'#outputs default value: "squared_exp"
 #'
-#'------------------------------------------
+#'#------------------------------------------
 #'p <- new.gp(cov_fun = "linear")
 #'get_cov_name(p)
 #'#output: "linear"
@@ -484,6 +486,7 @@ get_cov_name <- function(obj){
 #' @export
 #'
 #' @examples
+#' library(dplyr) #to include pipe-operator
 #' #initializing a new 'gp' object
 #' p <- new.gp() %>%
 #'      add_data(1:3, 1:3)
@@ -509,6 +512,8 @@ get_K <- function(obj){
 #' @export
 #' @seealso set_cov for setting the covariance function of the gp-object
 #' @examples
+#' library(dplyr) #to include pipe-operator
+#'
 #' p <- new.gp() %>%
 #'      add_data(1:3, 1:3)
 #' f <- get_cov(p)
@@ -531,6 +536,8 @@ get_cov <- function(obj){
 #' @export
 #'
 #' @examples
+#' library(dplyr) #to include pipe-operator
+#'
 #' p1 <- new.gp() %>% add_data(matrix(c(1:10, 2:11, 3:12),nrow=3), 1:10)
 #' get_data(p1)
 #' #output is a data.frame
@@ -573,6 +580,8 @@ get_data <- function(obj, df = T){
 #' @details If you are interested in the parameters that are used by the different
 #' available covariance functions, visit the vignette of this package
 #' @examples
+#' library(dplyr) #to include pipe-operator
+#'
 #' p1 <- new.gp() %>% add_data(matrix(c(1:10, 2:11, 3:12),nrow=3), 1:10)
 #'
 #' get_parameter(p1)
@@ -652,6 +661,8 @@ get_noise <- function(obj){
 #' informations about optimizing hyperparameters, see also optimize_gp
 #'
 #' @examples
+#' library(dplyr) #to include pipe-operator
+#'
 #' p <- new.gp() %>%  add_data(1:10, 1:10)
 #'
 #' get_log_marginal_likelihood(p)
@@ -683,6 +694,8 @@ get_log_marginal_likelihood <- function(obj){
 #' @export
 #'
 #' @examples
+#' library(dplyr) #to include pipe-operator
+#'
 #' p <- new.gp() %>%  add_data(1:10, 1:10)
 #' get_prediction(p,11)
 #'
@@ -718,11 +731,12 @@ get_prediction <- function(obj, x_input){
 #' optimize_gp().
 #'
 #' @examples
+#'
 #' p1 <- new.gp()
 #' # the default value
-#' get_cov(p1, "gamma_exp")
+#' get_cov(p1)
 #'
-#' #modifing the vallue
+#' #modifing the value
 #' set_cov(p1,"gamma_exp")
 #' get_cov(p1)
 #'
@@ -817,7 +831,7 @@ set_noise <- function(obj, noise){
 set_parameter <- function(obj, sigma=NULL, l=NULL, alpha=NULL, sigma0=NULL, gamma=NULL){
   if(!("gp" %in% class(obj)))
     stop("obj has to be a member of class 'gp'")
-  if(obj$get_input_dim())
+  if(is.null(obj$get_input_dim()))
     stop("You have to add data, before setting the parameters. Use 'add_data()'
     to do this")
   if(!is.null(sigma)){
@@ -869,7 +883,7 @@ set_parameter <- function(obj, sigma=NULL, l=NULL, alpha=NULL, sigma0=NULL, gamm
 #' @examples
 #' p <- new.gp()
 #' add_data(p, 1:10,1:10)
-#' set_mean(p, function(x) x)
+#' set_mean_fun(p, function(x) x)
 #'
 set_mean_fun <- function(obj, mean_fun){
   if(!("gp" %in% class(obj)))

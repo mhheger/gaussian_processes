@@ -16,6 +16,7 @@ variance-covariance matrix of "obj"
 Getting the variance-covariance matrix
 }
 \examples{
+library(dplyr) #to include pipe-operator
 #initializing a new 'gp' object
 p <- new.gp() \%>\%
      add_data(1:3, 1:3)

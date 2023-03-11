@@ -24,6 +24,8 @@ of the used Gaussian Process model. If you are interested in further
 informations about optimizing hyperparameters, see also optimize_gp
 }
 \examples{
+library(dplyr) #to include pipe-operator
+
 p <- new.gp() \%>\%  add_data(1:10, 1:10)
 
 get_log_marginal_likelihood(p)

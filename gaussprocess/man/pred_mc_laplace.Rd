@@ -29,21 +29,21 @@ vector describing the probabilities of the different labels
 Predictions using multiclass-laplace-approximations
 }
 \examples{
-x <- 1:100
-y <-as.integer(x<50)
-y <- c ( y, as.integer(x>50))
+x <- 1:50
+y <-as.integer(x<5)
+y <- c ( y, as.integer(x>5))
 X_learn <- as.list(x)
-cov_list <- list(
-  function(x,y) exp(- sqrt(sum((x-y)^2))),
-  function(x,y) exp(- sqrt(sum((x-y)^2))),
+covariance_list <- list(
+  function(x,y) exp(- 0.5*sqrt(sum((x-y)^2))),
+  function(x,y) exp(- 0.5*sqrt(sum((x-y)^2)))
 )
 
 K <- list(
- cov_cross(X_learn, X_learn,cov_list[[1]]),
- cov_cross(X_learn, X_learn,cov_list[[2]])
+ cov_cross(X_learn, X_learn,covariance_list[[1]]),
+ cov_cross(X_learn, X_learn,covariance_list[[2]])
 )
 
 f_mode <- find_mode_mc_laplace(K,y)$mode
 
-pred_mc_laplace(X_learn, K, f_mode, cov_list, 6)
+pred_mc_laplace(X_learn, K, f_mode, covariance_list, 20)
 }
