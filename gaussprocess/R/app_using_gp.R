@@ -441,6 +441,16 @@ server <- function(input,output){
       }
       on.exit(removeNotification(note), add = TRUE)
     }
+    note <- showNotification("Setting Parameters...", duration = NULL, closeButton = FALSE)
+    p1$set_cov(input$cov)
+    checks <- c (test_sigma(),test_sigma0(),test_alpha(), test_gamma(), test_l(), test_noise())
+
+    if(all(checks)){
+      p1$set_parameter(sigma= sigma(), l = l(), alpha = alpha(), gamma = gamma(), sigma0= sigma0())
+      p1$set_noise(noise())
+      update_plot(update_plot()+1)
+    }
+    on.exit(removeNotification(note), add = TRUE)
   })
 
   #getting prediction for point input
