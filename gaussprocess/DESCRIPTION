@@ -17,4 +17,5 @@ Imports:
     ggplot2,
     plotly,
     R6,
-    shiny
+    shiny,
+    shinyFeedback
