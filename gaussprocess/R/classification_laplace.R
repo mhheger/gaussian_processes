@@ -313,7 +313,7 @@ find_mode_mc_laplace <- function(K_list, y){     #K list of matrices, y output (
     })
 
     objective <- function(a,f){
-      -0.5 * sum(a * f)+ sum(y * f) + sum(log(sapply(seq_len(C), function(i){
+      -0.5 * sum(a * f)+ sum(y * f) - sum(log(sapply(seq_len(C), function(i){
         (sum(exp(f[seq_len(n*C)%%n == i %% n ])))
       })))
     }
