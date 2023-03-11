@@ -61,7 +61,10 @@ R6::R6Class("gp",
 
               get_noise = function() private$noise,
 
-              get_prediction = function(input) {predict_gauss2(self, x_input = input)},
+              get_prediction = function(input) {
+                if(is.null(private$input_dimension))
+                  stop("You have to add data first, then you can get a prediction")
+                predict_gauss2(self, x_input = input)},
 
               get_log_marginal_likelihood = function() private$log_marginal_likelihood,
 
