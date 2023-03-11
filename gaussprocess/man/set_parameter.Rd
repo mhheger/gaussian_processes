@@ -36,6 +36,8 @@ setter-functions work on reference.
 Setting the parameters of the used covariance function
 }
 \details{
+To work correctly, you have to add data to the gp-object first, afterwards
+you can set the parameters.
 Those parameters can be used to modify the used covariance functions.
 Here is a list, which covariance function refers to which parameter
 

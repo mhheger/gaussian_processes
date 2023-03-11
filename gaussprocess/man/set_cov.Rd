@@ -29,11 +29,12 @@ If you are interested in optimizing the choice of the hyperparameter, try out
 optimize_gp().
 }
 \examples{
+
 p1 <- new.gp()
 # the default value
-get_cov(p1, "gamma_exp")
+get_cov(p1)
 
-#modifing the vallue
+#modifing the value
 set_cov(p1,"gamma_exp")
 get_cov(p1)
 

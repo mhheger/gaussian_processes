@@ -19,6 +19,8 @@ either a data.frame or a list of points
 Getting the data of a gp
 }
 \examples{
+library(dplyr) #to include pipe-operator
+
 p1 <- new.gp() \%>\% add_data(matrix(c(1:10, 2:11, 3:12),nrow=3), 1:10)
 get_data(p1)
 #output is a data.frame

@@ -20,12 +20,13 @@ For further information about usable covariance functions, you
 might consider the documentation of "set_cov"
 }
 \examples{
+library(dplyr) #to include pipe-operator
 p <- new.gp() \%>\%
      add_data(1:10,1:10)
 get_cov_name(p)
 #outputs default value: "squared_exp"
 
-------------------------------------------
+#------------------------------------------
 p <- new.gp(cov_fun = "linear")
 get_cov_name(p)
 #output: "linear"

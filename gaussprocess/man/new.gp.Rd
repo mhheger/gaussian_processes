@@ -25,7 +25,7 @@ initializing a new gp-instance
 }
 \examples{
 p1 <- new.gp()
-add_data(p1, x = 1:10, y = 2:11)
+add_data(p1, X_learn = 1:10, y = 2:11)
 print(p1)
 
 }
