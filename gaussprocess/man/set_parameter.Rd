@@ -38,12 +38,19 @@ Setting the parameters of the used covariance function
 \details{
 Those parameters can be used to modify the used covariance functions.
 Here is a list, which covariance function refers to which parameter
-constant: sigma0
-linear: sigma
-squared_exp: l
-exponential: l
-rational: l, alpha
-gamma_exp: l, gamma
+
+- constant: sigma0
+
+- linear: sigma
+
+- squared_exp: l
+
+- exponential: l
+
+- rational: l, alpha
+
+- gamma_exp: l, gamma
+
 For further information about the influence of each parameter, check out
 the vignette of this package.
 If you are interested in optimizing the choice of the hyperparameter, try out
@@ -55,7 +62,7 @@ add_data(p, 1:10,1:10)
 get_parameter(p)    #default-values
 
 set_parameter(p, sigma = 12, gamma = 1.5)
-get_paramter(p)   #modified values
+get_parameter(p)   #modified values
 
 #updating via list
 par_list <- list( sigma0 = 3, alpha = 2, l = 13)

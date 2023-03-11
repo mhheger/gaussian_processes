@@ -92,8 +92,10 @@ R6::R6Class("gp",
                 if(!is.null(sigma0)) if(!is.na(sigma0)) private$sigma0 <- sigma0
                 if(!is.null(gamma)) if(!is.na(gamma)) private$gamma <- gamma
                 self$set_cov(private$covname)
-                private$K <- cov_cross(private$X_learn, private$X_learn, private$cov)
-                self$update_marginal_likelihood()
+                if(!is.null(private$input_dimension)){
+                  private$K <- cov_cross(private$X_learn, private$X_learn, private$cov)
+                  self$update_marginal_likelihood()
+                }
               },
 
               set_noise = function(noise){
@@ -773,14 +775,23 @@ set_noise <- function(obj, noise){
 #' setter-functions work on reference.
 #' @export
 #' @details
+#' To work correctly, you have to add data to the gp-object first, afterwards
+#' you can set the parameters.
 #' Those parameters can be used to modify the used covariance functions.
 #' Here is a list, which covariance function refers to which parameter
-#' constant: sigma0
-#' linear: sigma
-#' squared_exp: l
-#' exponential: l
-#' rational: l, alpha
-#' gamma_exp: l, gamma
+#'
+#' - constant: sigma0
+#'
+#' - linear: sigma
+#'
+#' - squared_exp: l
+#'
+#' - exponential: l
+#'
+#' - rational: l, alpha
+#'
+#' - gamma_exp: l, gamma
+#'
 #' For further information about the influence of each parameter, check out
 #' the vignette of this package.
 #' If you are interested in optimizing the choice of the hyperparameter, try out
@@ -792,7 +803,7 @@ set_noise <- function(obj, noise){
 #' get_parameter(p)    #default-values
 #'
 #' set_parameter(p, sigma = 12, gamma = 1.5)
-#' get_paramter(p)   #modified values
+#' get_parameter(p)   #modified values
 #'
 #' #updating via list
 #' par_list <- list( sigma0 = 3, alpha = 2, l = 13)
@@ -803,6 +814,9 @@ set_noise <- function(obj, noise){
 set_parameter <- function(obj, sigma=NULL, l=NULL, alpha=NULL, sigma0=NULL, gamma=NULL){
   if(!("gp" %in% class(obj)))
     stop("obj has to be a member of class 'gp'")
+  if(obj$get_input_dim())
+    stop("You have to add data, before setting the parameters. Use 'add_data()'
+    to do this")
   if(!is.null(sigma)){
     if(is.list(sigma)){
        l <- sigma[["l"]]
