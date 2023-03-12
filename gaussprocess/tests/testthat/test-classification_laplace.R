@@ -72,4 +72,24 @@ test_that("unallowed X_learn inputs", {
 })
 
 
+# tests for find_mode_mc_laplace -------------------------------------------
+test_that("unallowed labels", {
+  K_list = list(
+    matrix(1:4, nrow = 2),
+    diag(c(1,2))
+  )
+  expect_error(find_mode_mc_laplace(K_list, c(2,1)), regex = "1 or 0")
+})
+
+# tests to fullfill
+test_that("unallowed matrix list", {
+  K_list = list(
+    matrix(1:4, nrow = 2),
+    diag(c(1,2,3))
+  )
+  expect_error(find_mode_mc_laplace(K_list, c(0,1)), regex = "dimension")
+})
+
+
+
 

@@ -23,8 +23,10 @@ Mode-finding for multiclass laplace approximation
 \details{
 Assuming n points, for which the right labeling is known, and C possible
 classes, than this vector is build up like this:
+
 - for each class, we consider the vector y_c, which has length n and whose
 entries are defined as 1, if point i belongs to class c, or 0 otherwise.
+
 - y is created by joining all y_c - vectors.
 }
 \examples{

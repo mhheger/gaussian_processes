@@ -865,7 +865,7 @@ set_parameter <- function(obj, sigma=NULL, l=NULL, alpha=NULL, sigma0=NULL, gamm
     if(!is.numeric(sigma)| !(length(sigma)==obj$get_input_dim()))
       stop(stringr::str_glue("sigma has to be a numeric vector with length {obj$get_input_dim()}"))
 
-  obj$set_parameter(sigma,l, alpha, sigma0, gamma)
+  invisible(obj$set_parameter(sigma,l, alpha, sigma0, gamma))
   invisible(return(obj))
 }
 

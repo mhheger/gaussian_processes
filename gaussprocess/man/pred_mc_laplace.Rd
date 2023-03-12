@@ -4,10 +4,20 @@
 \alias{pred_mc_laplace}
 \title{Predictions using multiclass-laplace-approximations}
 \usage{
-pred_mc_laplace(X_learn, K_list, f_mode, cov_list, x_input, n_sample = 1000)
+pred_mc_laplace(
+  X_learn,
+  y_learn,
+  K_list,
+  f_mode,
+  cov_list,
+  x_input,
+  n_sample = 1000
+)
 }
 \arguments{
 \item{X_learn}{list of input points}
+
+\item{y_learn}{input class labels of learning data}
 
 \item{K_list}{list of variance-covariance-matrices}
 
@@ -45,5 +55,5 @@ K <- list(
 
 f_mode <- find_mode_mc_laplace(K,y)$mode
 
-pred_mc_laplace(X_learn, K, f_mode, covariance_list, 20)
+pred_mc_laplace(X_learn,y, K, f_mode, covariance_list, 20)
 }
