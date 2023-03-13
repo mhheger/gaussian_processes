@@ -109,7 +109,7 @@ ui <- fluidPage(
                           )
                  ),
                  fluidRow(
-                   DT::DTOutput("data")
+                   DT::DTOutput("data", width = "80%")
                  )
         ),
         tabPanel("get prediction",
@@ -161,7 +161,7 @@ ui <- fluidPage(
 
 
 # Defining server function ------------------------------------------------
-server <- function(input,output){
+server <- function(input,output, session){
 
   # global values -----------------------------------------------------------
   p1 <- gp$new()  #gp object
@@ -169,7 +169,7 @@ server <- function(input,output){
   y_data <- reactiveVal() #kind of stack variable of all y inputs
   X <- reactiveVal() #current x input
   y <- reactiveVal() #current y input
-  prediction <- reactiveVal("") #current predicted value
+  prediction <- reactiveVal() #current predicted value
   update_plot <-reactiveVal(0) #variable, that causes the plot updates
   curr_plot <- reactiveVal()
   set_input_dim <- reactiveVal()
@@ -205,7 +205,7 @@ server <- function(input,output){
     }
   )
   output$plot <- renderPlot({
-    c(update_plot())
+    update_plot()
     if(input_dim()==1 & !is.null(X_data())){
       note <- showNotification("Plotting...", duration = NULL, closeButton = FALSE)
       curr_plot(p1$plot(input$xrange[1],input$xrange[2]))
@@ -232,8 +232,20 @@ server <- function(input,output){
   })
 
   output$prediction <- renderPrint({
-    print("The prediction of the function value is")
-    print(prediction())
+    if(!is.null(X_data()) & !is.null(prediction()))
+      s <- str_glue("According to the setting of the Gaussian Process,
+                    we get to the following prediction:
+
+                    - predicted value: {prediction()$f_predict}
+
+                    - variance {prediction()$var_f}
+
+                    with log marginal likelihood:
+                    - {prediction()$log_marginal_likelihood}
+                    ")
+    else
+      s <- "No prediction without data"
+    print(s)
   }
   )
 
@@ -441,16 +453,6 @@ server <- function(input,output){
       }
       on.exit(removeNotification(note), add = TRUE)
     }
-    note <- showNotification("Setting Parameters...", duration = NULL, closeButton = FALSE)
-    p1$set_cov(input$cov)
-    checks <- c (test_sigma(),test_sigma0(),test_alpha(), test_gamma(), test_l(), test_noise())
-
-    if(all(checks)){
-      p1$set_parameter(sigma= sigma(), l = l(), alpha = alpha(), gamma = gamma(), sigma0= sigma0())
-      p1$set_noise(noise())
-      update_plot(update_plot()+1)
-    }
-    on.exit(removeNotification(note), add = TRUE)
   })
 
   #getting prediction for point input
