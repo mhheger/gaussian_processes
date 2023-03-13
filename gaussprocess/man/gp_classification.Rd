@@ -136,9 +136,9 @@ X_learn <- list(
 )
 
 mcgp$add_data(X_learn, y)
-mcpg$get_prediction(c(1,2,4))
+mcgp$get_prediction(c(1,2,4))
 
-Setting paramters
+Setting parameters
 
 
 ## ------------------------------------------------
@@ -157,7 +157,7 @@ X_learn <- list(
 )
 
 mcgp$add_data(X_learn, y)
-mcgp$set_paramters(1, "linear", list(sigma = c(1,2,3)))
+mcgp$set_parameters(1, "linear", list(sigma = c(1,1,1)))
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -431,9 +431,9 @@ X_learn <- list(
 )
 
 mcgp$add_data(X_learn, y)
-mcpg$get_prediction(c(1,2,4))
+mcgp$get_prediction(c(1,2,4))
 
-Setting paramters
+Setting parameters
 
 }
 \if{html}{\out{</div>}}
@@ -481,7 +481,7 @@ X_learn <- list(
 )
 
 mcgp$add_data(X_learn, y)
-mcgp$set_paramters(1, "linear", list(sigma = c(1,2,3)))
+mcgp$set_parameters(1, "linear", list(sigma = c(1,1,1)))
 }
 \if{html}{\out{</div>}}
 

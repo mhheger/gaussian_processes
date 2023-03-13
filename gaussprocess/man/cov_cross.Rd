@@ -21,3 +21,7 @@ variance-covariance-matrix of dimension 'length(x)':'length(y)'
 \description{
 calculating the variance-covariance-matrix
 }
+\examples{
+cov_cross(list(1,2,3), list(1,2), cov = function(x,y) x*y)
+
+}

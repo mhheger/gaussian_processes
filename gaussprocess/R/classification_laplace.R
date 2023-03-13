@@ -301,13 +301,23 @@ predict_laplace <- function(X_learn, y_learn, cov_fun, likelihood_fun, x_input){
 #'
 #' find_mode_mc_laplace(K_list, y)
 find_mode_mc_laplace <- function(K_list, y){     #K list of matrices, y output (0,1)
+  # checks
+  if(is.null(K_list) | is.null(y))
+    stop("Missing arguments.")
   if(!all(y==1 | y ==0))
     stop("Values of labels have to be either 1 or 0.")
+  expected_dim <- dim(K_list[[1]])
+  check_dim <- sapply(K_list, dim)
+  if(!all(check_dim == expected_dim))
+    stop("All matrices in K_list must have the same dimension!")
+
+
+  # starting calculation
   n <- nrow(K_list[[1]])
   C <- length(K_list)
   f <- numeric(n*C)
   precision <- 10 ^(-15)
-
+  # implementing newton iteration
   for(iterations in 1:100){
     E_list <- list()
     PI <- list()
@@ -393,6 +403,16 @@ find_mode_mc_laplace <- function(K_list, y){     #K list of matrices, y output (
 #'
 #'
 diag_block_matrix <- function(matrix_list){
+  #checking if list is non empty
+  check_empty <- sapply(matrix_list, function(m) return(!is.null(m)))
+  if(!all(check_empty)) stop("matrix_list is not allowed to have empty entries")
+  #checking if list entries are matrices
+  check_matrix <- sapply(matrix_list, is.matrix)
+  if(!all(check_matrix)) stop("There are non-matrix elements in matrix_list")
+  #checking if matrices are quadratic
+  check_q <- sapply(matrix_list, function(m) return(nrow(m)==ncol(m)))
+  if(!all(check_q)) stop("There are non-quadratic matrices in matrix_list")
+
   dims <- sapply(matrix_list, nrow)
   M <- diag(sum(dims))
   curr_pos <- 1
@@ -442,8 +462,28 @@ diag_block_matrix <- function(matrix_list){
 #'
 #'pred_mc_laplace(X_learn,y, K, f_mode, covariance_list, 20)
 pred_mc_laplace <- function(X_learn, y_learn, K_list, f_mode, cov_list, x_input, n_sample = 1000){
+  #checks
+  if(is.null(K_list) | is.null(y_learn) | is.null(f_mode) |is.null(x_input) | is.null(cov_list))
+    stop("Missing arguments.")
   if(!all(y_learn==1 | y_learn ==0))
     stop("Values of labels have to be either 1 or 0.")
+  expected_dim <- dim(K_list[[1]])
+  check_dim <- sapply(K_list, dim)
+  if(!all(check_dim == expected_dim))
+    stop("All matrices in K_list must have the same dimension!")
+  if(!is.list(X_learn))
+    stop("X_learn has to be a list of numeric vectors")
+  check_num <- sapply(X_learn,is.numeric)
+  if(!all(check_num))
+    stop("X_learn has to be a list of numeric vectors")
+  if(! length(f_mode)==length(y_learn))
+    stop("Length of f_mode doesn't fit to the input data")
+  check_clo <- sapply(cov_list, function(x) typeof(x)=="closure")
+  if(!all(check_clo))
+    stop("Not all items in cov_list are closures")
+  if(! length(x_input) == length(X_learn[[1]]))
+    stop("x_input hasn't the same length as input data")
+
   n <- nrow(K_list[[1]])
   C <- length(K_list)
   p <- sapply(seq_len(n*C), function(i){
@@ -519,6 +559,8 @@ R6::R6Class("gp_classification",
 #'
               initialize = function(n, covs = rep("squared_exp",n)){
                 private$number_categories <- n
+                if(!length(covs)==n)
+                  stop(stringr::str_glue("Length of covs has to equal {n}"))
                 for (i in seq_len(n)){
                   private$gp_list[[i]] <- gp$new()
                   private$gp_list[[i]]$set_cov(covs[[i]])
@@ -558,10 +600,14 @@ R6::R6Class("gp_classification",
               add_data = function(X_learn, y){
                 n <- private$number_categories
                 y <- unlist(y)
+                if(length(y)%%n !=0)
+                  stop("Length of y is not a multiple of the number of classes!")
                 if(!all(y==1 | y ==0))
                   stop("Values of labels have to be either 1 or 0.")
+                k = length(y)/n
                 for(i in seq_len(n)){
-                  y_i <- y[seq_len(length(y))%%n == i %% n]
+                  #y_i <- y[seq_len(length(y))%%n == i %% n]
+                  y_i <- y[((i-1)*k +1): (i*k)]
                   private$gp_list[[i]]$add_data(X_learn, y_i)
                 }
                 X_learn <- convert_to_list(X_learn, length(y)/n )
@@ -685,7 +731,7 @@ R6::R6Class("gp_classification",
 #' )
 #'
 #' mcgp$add_data(X_learn, y)
-#' mcpg$get_prediction(c(1,2,4))
+#' mcgp$get_prediction(c(1,2,4))
 #'
               get_prediction = function(x_input, n_samples = 1000){
                 f_mode <- private$f_mode
@@ -710,7 +756,6 @@ R6::R6Class("gp_classification",
 #'
 #' @details See ?set_cov or ?set_parameter for further information about the possible
 #' values of cov_name or parameter_list
-#' @return
 #' @export
 #'
 #' @examples
@@ -726,7 +771,7 @@ R6::R6Class("gp_classification",
 #' )
 #'
 #' mcgp$add_data(X_learn, y)
-#' mcgp$set_paramters(1, "linear", list(sigma = c(1,2,3)))
+#' mcgp$set_parameters(1, "linear", list(sigma = c(1,1,1)))
               set_parameters = function(index, cov_name=NULL, parameter_list=NULL){
                 if(is.null(index))
                   stop(stringr::str_glue("index has to be between 1 and {private$number_categories}"))

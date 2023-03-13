@@ -22,3 +22,6 @@ convert_to_list
 A package interna, that provides the converting of the input data to the
 needed list type
 }
+\examples{
+convert_to_list(matrix(1:6, nrow = 2), n= 2)
+}

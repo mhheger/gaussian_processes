@@ -163,6 +163,7 @@ predict_gauss2 <- function(X, x_input, cholesky = F){
 #' @return a list of vectors of length n
 #'
 #' @examples
+#' convert_to_list(matrix(1:6, nrow = 2), n= 2)
 convert_to_list <- function(x, n){
   if(is.data.frame(x)) x <- as.matrix(x)
   if(length(x)%%n !=0) stop("length/dimension of input data doesn't fit")
@@ -190,6 +191,7 @@ convert_to_list <- function(x, n){
 #' @return variance-covariance-matrix of dimension 'length(x)':'length(y)'
 #'
 #' @examples
+#' cov_cross(list(1,2,3), list(1,2), cov = function(x,y) x*y)
 #'
 cov_cross <- function(x,y,cov,...){ #returns the variance-covariance-matrix
   if(!is.list(x) | !is.list(y) | !is.numeric(x[[1]])| !is.numeric(y[[1]])){
