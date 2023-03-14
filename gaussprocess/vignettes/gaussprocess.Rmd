@@ -1,0 +1,366 @@
+---
+title: "gaussprocess"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{gaussprocess}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r setup}
+library(gaussprocess)
+devtools::load_all()
+set.seed(123)
+```
+
+## Gaussian Processes:
+
+The package `gaussprocess` tries to provide a simple and user-friendly
+way to use the formalism of a Gaussian Process to solve regression and
+classification problems. The following vignette gives a small
+introduction to Gaussian processes, afterwards we cover a basic and
+straight-forward way to get predictions using Gaussian process. But the
+main focus of this vignette and the package is the usage of a
+object-oriented approach, the `gp`-class, that allows a convenient
+handling of Gaussian process.
+
+## A Quick and Dirty Introduction to Gaussian Processes:
+
+A Gaussian process is a special kind of stochastic process. The
+important characteristic of these processes is, that every finite subset
+is multivariate normally distributed. This assumption leads to a
+advantage of Gaussian processes: If we are just given a finite number of
+points and related function values, then for any other point, we know,
+that the joint distribution of all the associated random variables is a
+multivariate Gaussian. If we now use Bayes Theorem the
+posteriori-distribution can be calculated and is analytically tractable
+(and for the regression case itself a normal distribution). So the
+calculations are less complicated than using other regression models.
+
+To completely describe a multivariate normal distribution you just need
+all the mean values, the variance and the covariance of the random
+variables. If you do modelling with Gaussian processes, most effort is
+done, to find a well-fitting covariance functions, that describes the
+influence between the data points in an adequate way. We will focus more
+on our implementation and the usage of our package than on the theory
+behind Gaussian processes.
+
+## covariance functions
+
+## first predictions
+
+## The usage of the `gp`-class:
+
+The main idea of the `gp`-class is to provide one object, that carries
+all the important data, that belongs to a Gaussian process. This object
+can be modified via simple functions/methods as we will see now:
+
+<h4>initializing a new `gp`-instance</h4>
+
+We simply use `new.gp()` to get a empty `gp`- instance.
+
+```{r, echo=TRUE}
+p <- new.gp()
+p 
+```
+
+We can also pass `cov_fun`-argument to `new.gp()`, if we want to specify
+the covariance function already at the beginning of the life of `p`. Per
+default the squared exponential is used. Here and also later we refer to
+the covariance functions via a there name as a character vector. The
+following table shows the names and (we will learn more about these
+later) the names of the used parameters:
+
+| covariance function | name            | parameters   |
+|---------------------|-----------------|--------------|
+| constant            | `"constant"`    | `sigma0`     |
+| linear              | `"linear"`      | `sigma`      |
+| squared exponential | `"squared_exp"` | `l`          |
+| exponential         | `"exponential"` | `l`          |
+| gamma exponential   | `"gamma_exp"`   | `l`, `gamma` |
+| rational            | `"rational"`    | `l`, `alpha` |
+
+But it's not a problem, if we do not specify the covariance function at
+the initialization of the object. We recommend using the squared
+exponential at the beginning, because most times, this will not cause
+any numerical matrix inversion issues.
+
+<h4>Adding data to a `gp`-instance</h4>
+
+After bringing a `gp`-instance to life, we also want to feed it with
+data. We do this via `add_data(obj, X_learn, y_learn, noise)`. First we
+will have a look at the different parameters of this function:
+
+-   `obj`: This is the `gp`-instance, we want to train with data
+-   `X_learn`: the data, where we already know the (noisy) function
+    values. You can insert different kind of data structure as
+    `X_learn`. You can use a list of numerical vectors, a matrix or a
+    data.frame. Later we will see some examples.
+-   `y_learn`: the (noisy) function values. Normally this is a numeric
+    vector, but if you used a data.frame for `X_learn`, you can specify
+    a column of this data.frame, that contains the associated y-values.
+-   `noise`: The standard deviation of the noise, that distorts the real
+    function values.
+
+Let's see this in action:
+
+```{r, echo=TRUE}
+#input via list of points: 
+X <- list(c(1,2), c(2,3), c(3,4))
+y <- c(1,0,1) + rnorm(3,0,0.1)
+p <- new.gp() %>% 
+  add_data(X,y,0.1)
+
+#input via matrix:
+X <- matrix(c(1,2,2,3,3,4), nrow= 2)
+p <- new.gp() %>% 
+  add_data(X,y,0.1)
+
+#input via data.frame
+X <- data.frame(x1 = c(1,2,3), x2 = c(2,3,4), val = y )
+p <- new.gp() %>% 
+  add_data(X,"val",0.1)
+
+```
+
+<h4>Getting first predictions</h4>
+
+Now we already achieved a state, where we can get first predictions. For
+this we use the `get_prediction()`-function. The function takes two
+arguments:
+
+-   `obj`: a instance of the class `gp`
+-   `x_input`: a numerical vector, that describes the coordinates of the
+    point where we want to get the prediction
+
+Pay attention, that the length of `x_input` does fit to the dimension of
+the points, that you already included. Otherwise this will cause an
+error.
+
+Here is a neat example, how this all works:
+
+```{r}
+x <- 1:6
+y <- 1:6 + rnorm(6,0,0.1)
+p <- new.gp() %>% 
+  add_data(x,y,0.1) 
+ get_prediction(p,3.3)
+ get_prediction(p,8)
+```
+
+<h4>Visualizing</h4>
+
+Maybe we are more interested in visualizing the results in a plot. This
+for one-dimensional inputs, this is possible via `plot()`. You can just
+pass the `gp`-instance to the `plot()`-function, add the start x-value
+and the end x-value and get a plot like this:
+
+```{r, fig.width = 5 , fig.align = "center"}
+x <- 1:6
+y <- 1:6 + rnorm(6,0,0.1)
+p <- new.gp() %>% 
+  add_data(x,y,0.1) 
+plot(p,0,10)
+```
+
+<h4>Modifying a `gp`-instance</h4>
+
+As we saw in the last example the predicted value falls towards zero
+outside the area, that is covered by the learning data. The reason is,
+that we assume a zero mean value in the prior per default. But we can
+adjust all the presetting of the `gp`-object manually. The following
+setter-functions are available:
+
+-   `set_cov()` for changing the used covariance function
+-   `set_parameter()` for adjusting the parameters of the used
+    covariance
+-   `set_mean_fun()` if we have further information about the
+    mean-function, that we want to pass to our model.
+-   `set_noise()` if we want to change the value of the standard
+    deviation of the noise on the data.
+
+Let's start with the different covariance-functions:
+
+<h6>`set_cov()`</h6>
+
+As we mentioned at the beginning, the covariance function can be changed
+after initialization. This can be done via `set_cov(<obj>, <cov_name>)`,
+where `<obj>` is a `gp`-object and `<cov_name>` is a character vector,
+that contains the intern name of the covariance-function listed in the
+table above. There is not only a setter-function, getter-functions also
+exists -, if you want to check, which covariance function is used at the
+moment.
+
+-   `get_cov_name()` returns the name string
+-   `get_cov()` returns the used closure
+
+Here we see an example, how to change the used covariance function and
+which effects can be caused by this:
+
+```{r,fig.width = 5 , fig.align = "center"}
+x <- 1:6
+y <- 1:6 + rnorm(6,0,0.1)
+p <- new.gp() %>% 
+  add_data(x,y,0.1) 
+get_cov_name(p)
+plot(p,0,10)
+
+set_cov(p, "gamma_exp")
+plot(p,0,10)
+```
+
+<h6>`set_parameter()`</h6>
+
+To change the (hyper-)parameters of the covariance functions, we can use
+the `set_parameter()` - function. There are two ways to pass the
+parameters into this function.
+
+-   we can insert each parameter as it's own named argument, like this:
+
+```{r include=FALSE}
+x <- 1:6
+y <- 1:6 + rnorm(6,0,0.1)
+p <- new.gp() %>% 
+  add_data(x,y,0.1) 
+```
+
+```{r}
+ set_parameter(p, l = 1, gamma = 1.3) 
+```
+```{r echo = TRUE}
+get_parameter(p)
+```
+
+-   If we want to change more than just one or two parameters, for
+    example, if we want to update all parameters, that are saved in the
+    `gp`-instance (so also the default-parameters of all the other
+    covariance functions, even if we do not use them at the moment), we
+    can also input a named list:
+
+```{r, echo=TRUE}
+par_list = list(sigma = 1, l = 1, gamma = 0.5, alpha = 2, sigma0 = 2)
+ set_parameter(p, par_list)
+```
+
+If we are not sure about the values of the parameters, we can get them
+via `get_parameter()`
+
+```{r, echo=TRUE}
+get_parameter(p) #Getting all parameters saved in p
+
+#just observing the parameters used by the current covariance-function
+get_parameter(p, used = TRUE) 
+```
+
+<h6>`set_mean_fun()`</h6>
+
+There are some cases, where it could be advantageous to specifiy the
+mean function of the prior, for example if we already know, that the
+function, we want to regress is a periodic function, we might consider
+to use a periodic function as mean function. The usage of
+`set_mean_fun(obj, mean_fun)` is quite simple. There are two possible
+cases for `mean_fun`:
+
+-   if we just want to use a different constant value as mean, we can
+    input a numeric value, like this:
+
+```{r,echo= TRUE, fig.width = 5 , fig.align = "center"}
+#set_mean_fun(p, 3)
+#plot(p,0,20)
+```
+
+Now we see in the plot, that the predicted function-values converge
+towards 3 outside the area covered by the learning data.
+
+-   if we want to include more sophisticated mean functions, we can also
+    pass closure to `set_mean_fun`. But here we have to be careful. The
+    function must handle one numeric vector of the length of the input
+    dimension and return a real value. Here we see an example and a
+    counter-example for this:
+
+```{r warning=TRUE, fig.width = 5 , fig.align = "center"}
+f <- function(x) return(sin(x))
+g <- function(x,y) return(x+y)
+set_mean_fun(p, f)
+plot(p,0,20)
+testthat::expect_error(set_mean_fun(p, g))
+```
+
+To get the currently used mean function just use `get_mean_fun()`.
+
+<h6>`set_noise()`</h6>
+
+This is the last parameter, that can be changed by the user. The usage
+is straight forward:
+
+```{r}
+set_noise(p, 1)
+```
+
+<i> Note: Due to bad conditioned matrix inversions, sometimes adding
+data or changing hyper-parameters will lead to warnings and errors
+caused by the needed intern matrix manipulations. If this happens, you
+can try to increase the noise value. According to the way the noise is
+included in the calculation, this may lead to diagonal-dominant
+matrices, which are numerical invertible. </i>
+
+<h4>Optimizing a `gp`-instance</h4>
+
+<h6>`optimize_gp()`</h6>
+
+You can use the optimization technique described above via the
+`optimize_gp()`-function. Just insert the `gp`-instance, you want to
+optimize. You will get a list of optimal parameters for each available
+covariance function and the settings of the `gp`-object will be changed
+to the optimal. Let's see this in action:
+
+```{r, fig.width = 5 , fig.align = "center"}
+x <- 1:6
+y <- 1:6 + rnorm(6,0,0.1)
+p <- new.gp() %>% 
+  add_data(x,y,0.1) 
+plot(p,0,10)
+optimize_gp(p)
+plot(p,0,10)
+```
+
+Now we are familiar with nearly all functions inside the
+`gaussprocess`-package, that deal with regression. Let's use all of this
+in a small toy example:
+
+```{r,fig.width = 5 , fig.align = "center"}
+# Generating some learning data: 
+f <- function(x){log(abs(2*x)+1)+sin(x) }
+xx <- runif(25,-10,10) 
+yy <- f(xx) + rnorm(25, 0, 0.2)
+#Real function
+plot(xx,yy)
+lines(seq(-10,10,len= 100), f(seq(-10,10,len = 100)))
+```
+
+Now we initialize a new `gp`-instance and add the noisy data:
+
+```{r, fig.width = 5 , fig.align = "center"}
+p <- new.gp() %>% 
+   add_data(xx,yy,0.2)
+plot(p,-10,10)
+```
+
+Description of the plot
+
+Let's optimize the the Gaussian process and look if the results
+improved:
+
+```{r, fig.width = 5 , fig.align = "center"}
+optimize_gp(p)
+plot(p,-10,10)
+```

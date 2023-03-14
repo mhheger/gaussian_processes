@@ -373,7 +373,7 @@ new.gp <- function(mode="regression", cov_fun = "squared_exp", response_fun = "p
 
   #need to do: handling with classification
 
-  invisible(return(p))
+  invisible(p)
 }
 
 
@@ -439,7 +439,7 @@ add_data <- function(obj, X_learn, y, noise = 0.1){
   if(!is.numeric(y) | !is.numeric(X_learn[[1]]))
     stop("Input must lead to numeric data")
   obj$add_data(X_learn, y, noise)
-  invisible(return(obj))
+  invisible(obj)
 }
 
 
@@ -727,7 +727,7 @@ set_cov <- function(obj, cov_fun){
     stop("obj has to be a member of class 'gp'")
   #further checks are done in init_cov
   obj$set_cov(cov_fun)
-  invisible(return(obj))
+  invisible(obj)
 }
 
 #' Setting the standard deviation of a gp instance
@@ -755,7 +755,7 @@ set_noise <- function(obj, noise){
     stop("obj has to be a member of class 'gp'")
   #further checks are done in obj$set_noise(noise)
   obj$set_noise(noise)
-  invisible(return(obj))
+  invisible(obj)
 }
 
 #' Setting the parameters of the used covariance function
@@ -835,7 +835,7 @@ set_parameter <- function(obj, sigma=NULL, l=NULL, alpha=NULL, sigma0=NULL, gamm
       stop(stringr::str_glue("sigma has to be a numeric vector with length {obj$get_input_dim()}"))
 
   obj$set_parameter(sigma,l, alpha, sigma0, gamma)
-  invisible(return(obj))
+  invisible(obj)
 }
 
 
@@ -859,7 +859,7 @@ set_mean_fun <- function(obj, mean_fun){
     stop("obj has to be a member of class 'gp'")
   #further testing is implemented in the class function
   obj$set_mean_fun(mean_fun)
-  invisible(return(obj))
+  invisible(obj)
 }
 
 #' Optimizing hyperparameters of gp instance
@@ -882,7 +882,7 @@ optimize_gp <- function(obj){
   if(!("gp" %in% class(obj)))
     stop("obj has to be a member of class 'gp'")
   obj$optim_parameter()
-  invisible(return(obj))
+  invisible(obj)
 }
 
 
