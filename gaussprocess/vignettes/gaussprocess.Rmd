@@ -159,8 +159,7 @@ p <- new.gp() %>%
 
 <h4>Visualizing</h4>
 
-Maybe we are more interested in visualizing the results in a plot. This
-for one-dimensional inputs, this is possible via `plot()`. You can just
+Maybe we are more interested in visualizing the results in a plot. For one-dimensional inputs this is possible via `plot()`. You can just
 pass the `gp`-instance to the `plot()`-function, add the start x-value
 and the end x-value and get a plot like this:
 
@@ -171,6 +170,8 @@ p <- new.gp() %>%
   add_data(x,y,0.1) 
 plot(p,0,10)
 ```
+How to understand this plot: The black line in the middle represents the mean 
+value, the colored band marks the interval within the variance distance around the mean value. 
 
 <h4>Modifying a `gp`-instance</h4>
 
@@ -265,7 +266,7 @@ get_parameter(p, used = TRUE)
 
 There are some cases, where it could be advantageous to specifiy the
 mean function of the prior, for example if we already know, that the
-function, we want to regress is a periodic function, we might consider
+function, we want to regress, is a periodic function, we might consider
 to use a periodic function as mean function. The usage of
 `set_mean_fun(obj, mean_fun)` is quite simple. There are two possible
 cases for `mean_fun`:
@@ -275,7 +276,7 @@ cases for `mean_fun`:
 
 ```{r,echo= TRUE, fig.width = 5 , fig.align = "center"}
 #set_mean_fun(p, 3)
-#plot(p,0,20)
+plot(p,0,20)
 ```
 
 Now we see in the plot, that the predicted function-values converge
@@ -339,9 +340,9 @@ in a small toy example:
 
 ```{r,fig.width = 5 , fig.align = "center"}
 # Generating some learning data: 
-f <- function(x){log(abs(2*x)+1)+sin(x) }
-xx <- runif(25,-10,10) 
-yy <- f(xx) + rnorm(25, 0, 0.2)
+f <- function(x){sin(3*x)+sin(x) }
+xx <- runif(30,-10,10) 
+yy <- f(xx) + rnorm(30, 0, 0.2)
 #Real function
 plot(xx,yy)
 lines(seq(-10,10,len= 100), f(seq(-10,10,len = 100)))
@@ -354,8 +355,14 @@ p <- new.gp() %>%
    add_data(xx,yy,0.2)
 plot(p,-10,10)
 ```
+```{r echo=FALSE}
+mise_1 <- integrate(function(x){(f(x)- sapply(x, function(y) get_prediction(p,y)$f_predict))^2}, -10,10)$value /20
 
-Description of the plot
+```
+
+We see that the rough course of the graph can be deducted out of the plot of the
+Gaussian process, but especially the small deflections of the function are 
+represented less detailed. 
 
 Let's optimize the the Gaussian process and look if the results
 improved:
@@ -364,3 +371,19 @@ improved:
 optimize_gp(p)
 plot(p,-10,10)
 ```
+Know we use the gamma-exponential covariance function and we see, that now also 
+small peaks are identifiable, especially in the area between -8 and 3. 
+```{r include=FALSE}
+mise_2 <- integrate(function(x){(f(x)- sapply(x, function(y) get_prediction(p,y)$f_predict))^2}, -10,10)$value/20 
+```
+But beneath the visual comparison, we can also compare the MISE of those two 
+regression models: 
+
+| default-valued model | optimized model|
+|---|---|
+| `r mise_1`| `r mise_2`|
+
+We can see, that the value is nearly halved by doing the optimization. 
+
+## Example of application:
+
