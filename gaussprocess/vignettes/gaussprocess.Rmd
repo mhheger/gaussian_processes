@@ -59,6 +59,53 @@ behind Gaussian processes.
 
 ## covariance functions
 
+The covariance function is, in a sense, the heart of the Gaussian process. It 
+describes how strongly and in which way known points influence the prediction
+of unknown function values. A covariance function has to be positive definite.
+The `gaussprocess`-package contains six implemented covariance functions. 
+Each of them follows a clear structure, which looks like this: 
+
+`cov_name(x,y,par1, par2, ..., pari)`
+
+Here `x` and `y` are numerical vectors of the same length, `par1` ,...`pari` 
+are parameters of the covariance function. It's important, that the 
+function works with `x` resp. `y` inputs of arbitrary dimension. 
+
+##### constant covariance 
+
+The most simple covariance function is the constant covariance function, 
+$$ f(x,y) = \sigma_0 ^2 $$
+This function only depends on $\sigma_0$ and not on $x$ or $y$. 
+You can access to this function via `constant_cov(x,y,sigma0)`. 
+
+##### linear covariance 
+
+The linear covariance function is defined as 
+$$ f(x,y) = \sum_{i=1}^n \sigma_i x_i y_i. $$
+You can access to the function via `linear_cov(x,y, sigma)`, please note, that
+`sigma` is a numerical vector of the same length like `x`. 
+
+##### squared exponential covariance
+$$f(x,y) = \exp(- \frac{\Vert x - y \Vert^2}{2l}) $$
+You can access to this function via `squared_exp_cov(x,y,l)`. Please denote,
+that `l` has to be a positive double. 
+
+##### exponential covariance
+$$f(x,y) = \exp(- \frac{\Vert x-y \Vert}{l}) $$
+You can access to this function via `exp_cov(x,y,l)`. Please denote,
+that `l` has to be a positive double. 
+
+##### gamma exponential covariance
+$$f(x,y) = \exp(- (\frac{\Vert x-y \Vert^2}{l})^\gamma )$$
+You can access to this function via `gamma_exp_cov(x,y,l, gamma)`. Please
+denote, that `l` has to be a positive double and the value of `gamma` is
+between 0 and 2. 
+
+##### rational quadratic covariance
+$$f(x,y) = 1 + (\frac{\Vert x -y \Vert^2}{2 \alpha l^2})^{-\alpha}$$
+You can access to this function via `rational`_cov(x,y,l, alpha)`. Please
+denote, that `l` and `alpha` have to be a positive double. 
+
 ## first predictions
 
 This section will cover the usage of the `predict_gauss`-function. This

@@ -1,6 +1,6 @@
 library(shiny)
 
-
+gp_app <- function(){
 # Defining UI -------------------------------------------------------------
 parameter_tabs <- tabsetPanel(
   id = "params",
@@ -33,13 +33,13 @@ ui <- fluidPage(
   titlePanel("Gaussian Processes"),
   sidebarLayout(
     sidebarPanel(
-      selectInput("modus",
-                  "Decide between regression or classification",
-                  choices = list(
-                    regression = "regression",
-                    classification = "classification"
-                  )
-      ),
+      # selectInput("modus",
+      #             "Decide between regression or classification",
+      #             choices = list(
+      #               regression = "regression",
+      #               classification = "classification"
+      #             )
+      # ),
       selectInput("cov",
                   "Choose for a covariance function",
                   choices = list(
@@ -583,3 +583,4 @@ server <- function(input,output, session){
 
 
 shinyApp(ui,server)
+}
