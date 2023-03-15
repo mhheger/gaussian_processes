@@ -1,54 +1,57 @@
-constant_cov <- function(sigma0) {
-  if(is.null(sigma0)) {
+
+constant_cov <- function(x,y,sigma) {
+  if(is.null(sigma) & (is.null(y) | is.null(x))) {
     NA
-  } else if(!is.numeric(sigma0)) {
+  } else if(!is.numeric(sigma)) {
     stop("parameters must be numeric!")
   } else {
-    sigma0 ^2
+    sigma ^2
   }
 }
 
 
 
-linear_cov <- function(x1,x2, sigma) {
-  if(is.null(x1) | is.null(x2) | is.null(sigma)) {
+linear_cov <- function(x,y, sigma) {
+  if(is.null(x) | is.null(y) | is.null(sigma)) {
     NA
-  } else if(length(x1) != length(x2) | length(x1) != length(sigma)) {
+  } else if(length(x) != length(y) | length(x) != length(sigma)) {
     stop("Input Vectors must have same length!")
-  } else if(!is.numeric(x1 + x2 + sigma)) {
+  } else if(!is.numeric(x + y + sigma)) {
     stop("Input parameters must be numerical!")
   } else {
-    sum(sigma^2 * x1 * x2)
+    sum(sigma^2 * x * y)
   }
 }
 
 
-squared_exp_cov <- function(r, l) {
-  if(is.null(r) | is.null(l)) {
+squared_exp_cov <- function(x,y, l) {
+  if(is.null(x) | is.null(y) | is.null(l)) {
     NA
-  } else if(!is.numeric(r)) {
+  } else if(!is.numeric(sqrt(sum((x-y)^2)))) {
     stop("r has to be a real parameter!")
   } else if(l < 0) {
-    stop("the parameter l has to be positive!")
+    stop("the parameter l has to be positive!") 
   } else {
-    exp(- (r ^ 2 )/(2*l^2))
-  }
+    exp(- ((sqrt(sum((x-y)^2))) ^ 2 )/(2*l^2))
+  } 
 }
 
 
-exp_cov <- function(r,l) {
-  if(is.null(r) | is.null(l)) {
+
+exp_cov <- function(x,y,l) {
+  if(is.null(x) | is.null(y) | is.null(l)) {
     NA
-  } else if(!is.numeric(r)) {
-    stop("r must be numeric!")
+  } else if(!is.numeric((sqrt(sum((x-y)^2))))) {
+    stop("input vectors must be numeric!") 
   } else {
-    exp(-(r/l))
+    exp(-((sqrt(sum((x-y)^2)))/l))
   }
 }
 
 
-gamma_exp_cov <- function(r, l, gamma) {
-  if(is.null(r) | is.null(gamma)) {
+
+gamma_exp_cov <- function(x,y, l, gamma) {
+  if(is.null(x) | is.null(y) | is.null(gamma)) {
     NA
   } else if(gamma <= 0 | gamma > 2) {
     stop("Gamma has to be in the interval (0,2]!")
@@ -56,20 +59,20 @@ gamma_exp_cov <- function(r, l, gamma) {
     stop("l must be positive!")
   } else {
     exp(
-      -((r / l) ^ gamma )
+      -((sqrt(sum((x-y)^2))) / l) ^ gamma 
     )
   }
 }
 
 
-rational_quadratic_cov <- function(r, l, alpha) {
-  if(is.null(r) | is.null(alpha) | is.null(l)) {
+rational_quadratic_cov <- function(x,y, l, alpha) {
+  if(is.null(x) | is.null(y) | is.null(alpha) | is.null(l)) {
     NA
   }
-  else if(l <= 0 | alpha <= 0)
+  else if(l <= 0 | alpha <= 0) 
     stop("l and alpha have to be positive!")
   else {(
-    1 + (r ^ 2) / 2 * alpha * l ^ 2
+    1 + ((sqrt(sum((x-y)^2))) ^ 2) / (2 * alpha * l ^ 2)
   ) ^ (-alpha)
   }
 }
@@ -80,15 +83,15 @@ rational_quadratic_cov <- function(r, l, alpha) {
 
 #summarise covariance functions in list
 #functions with missing parameters will be assigned NA
-covariance_list <- function(r = NULL, l = NULL, alpha = NULL, gamma = NULL,
-                            x1 = NULL, x2 = NULL, sigma = NULL, sigma0 = NULL, tibble = FALSE) {
+covariance_list <- function(l = NULL, alpha = NULL, gamma = NULL,
+                            x = NULL, y = NULL, sigma = NULL, tibble = FALSE) {
   lst <- list(
-    "constant" = constant_cov(sigma0),
-    "linear covariance" = linear_cov(x1,x2,sigma),
-    "squared exponential covariance" = squared_exp_cov(r,l),
-    "exponential covariance" = exp_cov(r,l),
-    "gamma exponential covariance" = gamma_exp_cov(r,l,gamma),
-    "rational quadratic covariance" = rational_quadratic_cov(r, l, alpha)
+    "constant" = constant_cov(x,y,sigma),
+    "linear covariance" = linear_cov(x,y,sigma),
+    "squared exponential covariance" = squared_exp_cov(x,y,l),
+    "exponential covariance" = exp_cov(x,y,l),
+    "gamma exponential covariance" = gamma_exp_cov(x,y,l,gamma),
+    "rational quadratic covariance" = rational_quadratic_cov(x,y, l, alpha)
   )
   if(tibble == TRUE) {
     t(tibble::as_tibble(lst))
@@ -117,46 +120,6 @@ is.stationary <- function(f) {
 is.nondegenerate <- function(f) {
   all("nondegenerate" %in% class(f))
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
