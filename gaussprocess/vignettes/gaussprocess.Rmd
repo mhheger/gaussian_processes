@@ -59,7 +59,11 @@ behind Gaussian processes.
 
 ## covariance functions
 
+
+
 ## first predictions
+
+
 
 ## The usage of the `gp`-class:
 
@@ -300,7 +304,9 @@ f <- function(x) return(sin(x))
 g <- function(x,y) return(x+y)
 set_mean_fun(p, f)
 plot(p,0,20)
-testthat::expect_error(set_mean_fun(p, g))
+
+#try this for an error 
+#set_mean_fun(p, g)
 ```
 
 To get the currently used mean function just use `get_mean_fun()`.
@@ -320,6 +326,17 @@ caused by the needed intern matrix manipulations. If this happens, you
 can try to increase the noise value. According to the way the noise is
 included in the calculation, this may lead to diagonal-dominant
 matrices, which are numerical invertible. </i>
+
+Beneath the getter-functions, that we have already mentioned, there are some 
+more, like:
+
+- `get_K(<obj>)`: this returns the variance-covariance matrix, that is used by the 
+Gaussian process
+-`get_data(<obj>, <df>)`: returns the training data. `df` is a logical value. 
+If `df=TRUE`, the data will be returned as a data.frame, otherwise in a list 
+format. 
+- `get_log_marginal_likelihood(<obj>)`: returns the current log marginal likelihood.
+
 
 #### Optimizing a `gp`-instance
 
@@ -406,6 +423,10 @@ classification tasks, but according to the discreteness of the class
 labels, the computations are more complicated. The
 `gaussprocess`-package provides some basics to handle binary and
 multiclass-classification.
+But be aware, cholesky-decomposition is used at some place and sometimes 
+causes unexpected errors, because of matrices that are called not to be 
+positive definite. 
+
 
 #### the `gp_classification`-class
 
@@ -442,19 +463,19 @@ Every instance of the `gp_classification`-class hosts $C$ instances of the
 `gp`-class, where $C$ is the number of class labels. Using these `gp`-class
 objects allows us, that we can get the variance-covariance matrix for each 
 class quite easy by using the `get_K()` function, moreover we are able to 
-save all the informations of class label about covariance functions, parameters 
-and data in seperate objects. 
+save all the information of class label about covariance functions, parameters 
+and data in separate objects. 
 </i>
 
 In the following example, we initialize a new object assuming 3 different 
-class labels and using squared exponential for the first class, 
-gamma-exponential for the second class. 
+class labels and using squared exponential for the first and second class,
+gamma-exponential for the third class. 
 ```{r}
-p_class <- gp_classification$new(n=3, c("squared_exp", "gamma_exp", "squared_exp"))
+p_class <- gp_classification$new(n=3, c("squared_exp", "squared_exp", "gamma_exp"))
 ```
 
 ##### Adding data 
-After initalizing a new instance, we want to train the model using training 
+After initializing a new instance, we want to train the model using training 
 data. Here we can use the `add_data`-method of `gp_classification`. This method 
 takes two arguments: `X_learn` and `y`. 
 
@@ -470,16 +491,16 @@ You can think about `y` as stacked vectors $y^c$ of length $n$ (assuming $n$ dat
 points in the training set). The value at position $i$ in $y^c$ denotes, if 
 data point $i$ is member of class $c$ or not. 
 
-Ok, this explanation was more complicated than it is in real life. 
+OK, this explanation was more complicated than it is in real life. 
 Let's make a small example: 
 Assume we have 3 training points $x_1,x_2,x_3$ and two classes $c_1$ and $c_2$.
 The following table summarizes the labeling of those points: 
 
-| point | label | 
-| ---|---|
-| $x_1$ | $c_1$|
-|$x_2$|$c_2$|
-|$x_3$|$c_1$|
+| point | label |
+|---|---|
+| $x_1$ | $c_1$ |
+| $x_2$ | $c_2$ |
+| $x_3$ | $c_1$ |
 
 Based on this information we can make up the vectors $y^{c_i}$:
 
@@ -493,12 +514,12 @@ We already initialized an object using 3 classes.
 Now we want to classify points in the plane, if they either belong 
 to the unit ball around $(4,1)$ (class $1$), the unit ball around the  $(1,1)$
 (class $2$) or none of those (class $3$). 
-We will create 30 data points uniformly distributed in the 2x6 square 
+We will create 50 data points uniformly distributed in the 2x6 square 
 and create the vector y. 
 
 ```{r}
-train_data <- tibble (x1 = runif(n=30, 0, 6),
-                      x2 = runif(n=30, 0, 2))
+train_data <- tibble (x1 = runif(n=50, 0, 6),
+                      x2 = runif(n=50, 0, 2))
 train_data %>%  mutate( c1 = as.integer(((x1-4)^2+(x2-1)^2) <= 1), 
                         c2 = as.integer(((x1-1)^2+(x2-1)^2) <= 1), 
                         c3 = rep(1, 30) - c1 -c2) -> train_data
@@ -515,7 +536,7 @@ Now we can add the data to `p_class` like this:
 p_class$add_data(train_data[c("x1", "x2")], y_train)
 ```
 
-### Getting predictions 
+#### Getting predictions 
 Now `p_class` is a fully trained (but not optimized) Gaussian process for 
 classification and so we want to get predictions. 
 For this aim, we simply use the `get_prediction()` method. This takes two 
@@ -538,6 +559,15 @@ A possible decision rule for getting a prediction on the class labels is taking
 the class with maximum possibility. So in this case our prediction would be 
 class $2$ and thus correct. 
 
+There are more getter-functions for the `gp_classification` objects, their
+usage is quite straight-forward, so we will just mention them: 
+
+- `get_K_list()`: returns list of all the variance-covariance matrices (one for each class label)
+
+- `get_X()`: returns list of the coordinates of the training data.
+- `get_y()`: returns the label vector, as described above
+- `get_covariances()`: returns list of used covariance functions (closures)
+
 ### Modifying a `gp_classification`-instance
 As mentioned above a `gp_classification`-instance consists of several `gp`-instances.
 For each`gp`-object we can modify the used covariance function and its parameters
@@ -545,14 +575,14 @@ via `set_parameters()`-method.
 This method has the following arguments: 
 
 - `index`: an integer value, referring to the number of the class, whose 
-paramters should be modified, this argument is necessary.
+parameters should be modified, this argument is necessary.
 - `cov_name`: name of the covariance function that should be used, this is an 
 optional argument 
 - `parameter_list`: named list of the parameters (their values), that should be 
 set. This argument is as well optional.
 
 ```{r}
-p_class$set_parameters(2, cov_name = "rational", parameter_list = list(alpha = 1))
+p_class$set_parameters(3, cov_name = "rational", parameter_list = list(alpha = 1))
 ```
 
 <i> 
@@ -566,8 +596,47 @@ of the unknown real distribution this will not surely lead to an optimization.
 
 
 
+```{r include=FALSE}
+grid <- list(c(x = 0, y = 0))
+for(x in seq(-1,7,len = 50)){
+  grid <- c(grid, lapply(seq(-1,3, len = 30), function(y){c(x = x,y = y)}))
+}
+               
+evaluate_gp <- function(x) tryCatch({which.max(p_class$get_prediction(x))}, 
+                                    error = function(cond) return(0))
+df2 <- NULL
+for(item in grid){
+  if(is.null(df2))
+    df2 <- matrix(c(x = item["x"], y = item["y"],label = evaluate_gp(item)), nrow = 1)
+  else
+    df2 <- rbind(df2, matrix(c(x = item[["x"]], y = item[["y"]],label = evaluate_gp(item)), nrow = 1) )
+}
+colnames(df2) <- c("x", "y", "label")
+df2_tbl <- as_tibble(df2)
+c1 <- df2_tbl %>% filter(label ==1)
+c2 <- df2_tbl %>% filter(label ==2)
+c3 <- df2_tbl %>% filter(label ==3)
+x = c(-1,7)
+y = c(-1,3)
 
+```
+Finally, we want to get a slight hint, if the tool returns acceptable
+predictions. The following figure shows the predictions `p_class` generates
+according to the current setting. 
 
+```{r echo=FALSE, fig.width = 5 , fig.align = "center"}
+plot(x, y, "n")+
+  points(unlist(c1[, "x"]), unlist(c1[, "y"]), col = "blue")+
+  points(unlist(c2[, "x"]), unlist(c2[, "y"]), col = "red") +
+  points(unlist(c3[, "x"]), unlist(c3[, "y"]), col = "green")+ 
+  points(unlist(train_data[,"x1"]), unlist(train_data[,"x2"]), pch = 4,col = "black")
+```
+Class $1$ is colored red, class $2$ blue and class $3$ green. The training 
+points are drawn as black crosses. 
+According to this illustration, we see, that the three classes are strictly 
+separated, but with the knowledge, how the classes are defined,  the predicted
+areas are not that far away from the real areas. But the "circles" are still 
+to0 big and so there is space for improvements. 
 
 
 

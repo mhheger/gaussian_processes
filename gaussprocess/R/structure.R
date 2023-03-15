@@ -792,7 +792,7 @@ set_noise <- function(obj, noise){
 #' get_parameter(p)    #default-values
 #'
 #' set_parameter(p, sigma = 12, gamma = 1.5)
-#' get_paramter(p)   #modified values
+#' get_parameter(p)   #modified values
 #'
 #' #updating via list
 #' par_list <- list( sigma0 = 3, alpha = 2, l = 13)
