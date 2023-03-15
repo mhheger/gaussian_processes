@@ -223,19 +223,19 @@ linear <- function(x,y,par){
   linear_cov(x,y,par$sigma)
 }
 squared_exp <- function(x,y, par){
-  squared_exp_cov(sqrt(sum(abs(x-y)^2)),par$l)
+  squared_exp_cov(x,y,par$l)
 }
 constant <- function(x,y, par){
   constant_cov(par$sigma0)
 }
 exponential <- function(x,y, par){
-  exp_cov(sqrt(sum(abs(x-y)^2)),par$l)
+  exp_cov(x,y,par$l)
 }
 gamma_exp <- function(x,y,par){
-  gamma_exp_cov(sqrt(sum(abs(x-y)^2)),par$l,par$gamma)
+  gamma_exp_cov(x,y,par$l,par$gamma)
 }
 rational <- function(x,y,par){
-  rational_quadratic_cov(sqrt(sum(abs(x-y)^2)),par$l,par$alpha)
+  rational_quadratic_cov(x,y,par$l,par$alpha)
 }
 
 cov_list <- list(
@@ -338,13 +338,9 @@ init_cov <- function(covname, sigma=0, l=1, alpha=1, sigma0=1, gamma=1){
 
 #' initializing a new gp-instance
 #'
-#' @param mode character vector, either "regression" or "classification"
 #' @param cov_fun character vector, name of the covariance function, that should
 #' be used. You have the choice between:
 #' "constant", "linear", "squared_exp", "exponential", "gamma_exp", "rational"
-#' @param response_fun character vector, name of the response function, that should
-#' be used in case of binary classification, either "logit" for logistic response
-#' function or "probit" for using the cummulative normal distribution.
 #'
 #' @return a "gp" object
 #' @export
@@ -354,31 +350,21 @@ init_cov <- function(covname, sigma=0, l=1, alpha=1, sigma0=1, gamma=1){
 #' add_data(p1, X_learn = 1:10, y = 2:11)
 #' print(p1)
 #'
-new.gp <- function(mode="regression", cov_fun = "squared_exp", response_fun = "probit"){
-  mode_list <- c("regression", "classification")
-  response_names <- names(response_list)
+new.gp <- function(cov_fun = "squared_exp"){
   cov_names <- names(cov_list)
-  if(any(is.na(mode))|any(is.null(mode))|any(is.na(cov_fun))|any(is.null(cov_fun))|any(is.na(response_fun))|any(is.null(response_fun)))
+  if(any(is.na(cov_fun))|any(is.null(cov_fun)))
     stop("Cannot handle NAs or NULL")
-  if(typeof(mode)!= "character" | length(mode)!= 1)
-    stop(stringr::str_glue("mode has to be a character. One of {stringr::str_flatten(mode_list, ', ')}"))
   if(typeof(cov_fun)!= "character" | length(mode)!= 1)
     stop(stringr::str_glue("cov_fun has to be a character. One of {stringr::str_flatten(cov_names, ', ')}"))
-  if(typeof(mode)!= "character" | length(mode)!= 1)
-    stop(stringr::str_glue("mode has to be a character. One of {stringr::str_flatten(response_names, ', ')}"))
-  if(!(mode %in% mode_list))
-    stop(stringr::str_glue("{mode} is not one of {stringr::str_flatten(mode_list, ', ')}"))
   if(!(cov_fun %in% cov_names))
     stop(stringr::str_glue("{cov_fun} is not one of {stringr::str_flatten(cov_names, ', ')}"))
-  if(!(response_fun %in% response_names))
-    stop(stringr::str_glue("{response_fun} is not one of {stringr::str_flatten(response_names, ', ')}"))
 
   p <- gp$new()
   p$set_cov(cov_fun)
 
   #need to do: handling with classification
 
-  invisible(return(p))
+  invisible(p)
 }
 
 
@@ -445,7 +431,7 @@ add_data <- function(obj, X_learn, y, noise = 0.1){
   if(!is.numeric(y) | !is.numeric(X_learn[[1]]))
     stop("Input must lead to numeric data")
   obj$add_data(X_learn, y, noise)
-  invisible(return(obj))
+  invisible(obj)
 }
 
 
@@ -746,7 +732,7 @@ set_cov <- function(obj, cov_fun){
     stop("obj has to be a member of class 'gp'")
   #further checks are done in init_cov
   obj$set_cov(cov_fun)
-  invisible(return(obj))
+  invisible(obj)
 }
 
 #' Setting the standard deviation of a gp instance
@@ -774,7 +760,7 @@ set_noise <- function(obj, noise){
     stop("obj has to be a member of class 'gp'")
   #further checks are done in obj$set_noise(noise)
   obj$set_noise(noise)
-  invisible(return(obj))
+  invisible(obj)
 }
 
 #' Setting the parameters of the used covariance function
@@ -866,7 +852,7 @@ set_parameter <- function(obj, sigma=NULL, l=NULL, alpha=NULL, sigma0=NULL, gamm
       stop(stringr::str_glue("sigma has to be a numeric vector with length {obj$get_input_dim()}"))
 
   invisible(obj$set_parameter(sigma,l, alpha, sigma0, gamma))
-  invisible(return(obj))
+  invisible(obj)
 }
 
 
@@ -890,18 +876,19 @@ set_mean_fun <- function(obj, mean_fun){
     stop("obj has to be a member of class 'gp'")
   #further testing is implemented in the class function
   obj$set_mean_fun(mean_fun)
-  invisible(return(obj))
+  invisible(obj)
 }
 
 #' Optimizing hyperparameters of gp instance
 #'
 #' @param obj a instance of class "gp"
 #'
-#' @return invisible return of the modified object.
+#' @return invisible retunr of list of optimized parameters for each covariance
+#' function
 #'
 #' @details
 #' Further details about the used method.
-#' Optimiziation based on the maximization of the marginal likelihood.
+#' Optimization based on the maximization of the marginal likelihood.
 #' @export
 #'
 #' @examples
@@ -912,8 +899,8 @@ set_mean_fun <- function(obj, mean_fun){
 optimize_gp <- function(obj){
   if(!("gp" %in% class(obj)))
     stop("obj has to be a member of class 'gp'")
-  obj$optim_parameter()
-  invisible(return(obj))
+  obj$optim_parameter() -> para
+  invisible(para)
 }
 
 

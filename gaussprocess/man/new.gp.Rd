@@ -4,18 +4,12 @@
 \alias{new.gp}
 \title{initializing a new gp-instance}
 \usage{
-new.gp(mode = "regression", cov_fun = "squared_exp", response_fun = "probit")
+new.gp(cov_fun = "squared_exp")
 }
 \arguments{
-\item{mode}{character vector, either "regression" or "classification"}
-
 \item{cov_fun}{character vector, name of the covariance function, that should
 be used. You have the choice between:
 "constant", "linear", "squared_exp", "exponential", "gamma_exp", "rational"}
-
-\item{response_fun}{character vector, name of the response function, that should
-be used in case of binary classification, either "logit" for logistic response
-function or "probit" for using the cummulative normal distribution.}
 }
 \value{
 a "gp" object

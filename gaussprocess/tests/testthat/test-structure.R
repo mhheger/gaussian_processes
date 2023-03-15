@@ -23,17 +23,11 @@ test_that("Handle false covariance functions", {
 
 # Testing new.gp ----------------------------------------------------------
 test_that("Handling false input for initializing gp object",{
-  expect_error(new.gp("staubsauger", cov_fun = "squared_exp", response_fun = "logit"),
+  expect_error(new.gp(cov_fun = "blub"),
                regex = "not one of")
-  expect_error(new.gp("regression", cov_fun = "blub", response_fun = "logit"),
-               regex = "not one of")
-  expect_error(new.gp("regression", cov_fun = "linear", response_fun = "logisch"),
-               regex = "not one of")
-  expect_error(suppressWarnings(new.gp("regression", cov_fun = function(x){x}, response_fun = "logit"),
+  expect_error(suppressWarnings(new.gp( cov_fun = function(x){x}),
                regex = "character"))
-  expect_error(new.gp(c("regression", "classification"), cov_fun = "linear", response_fun = "logit"),
-               regex = "character")
-  expect_error(new.gp(NULL, cov_fun = "linear", response_fun = "logit"),
+  expect_error(new.gp(NULL, cov_fun = NULL, response_fun = "logit"),
                regex = "NULL")
 })
 

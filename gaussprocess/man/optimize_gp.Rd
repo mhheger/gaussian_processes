@@ -10,12 +10,13 @@ optimize_gp(obj)
 \item{obj}{a instance of class "gp"}
 }
 \value{
-invisible return of the modified object.
+invisible retunr of list of optimized parameters for each covariance
+function
 }
 \description{
 Optimizing hyperparameters of gp instance
 }
 \details{
 Further details about the used method.
-Optimiziation based on the maximization of the marginal likelihood.
+Optimization based on the maximization of the marginal likelihood.
 }
