@@ -347,7 +347,7 @@ find_mode_mc_laplace <- function(K_list, y){     #K list of matrices, y output (
     for(item in E_list){
       M <- M + item
     }
-    M <- chol(M)
+    #M <- chol(M)
     PI_matrix <- PI[[1]]
     for(item in 2:C){
       PI_matrix <- rbind(PI_matrix, PI[[item]])
@@ -363,7 +363,8 @@ find_mode_mc_laplace <- function(K_list, y){     #K list of matrices, y output (
 
     b <- (D-PI_matrix %*% t(PI_matrix)) %*% f + y - p
     c <- E %*% K %*% b
-    a <- b - c + E %*% R %*%backsolve(( t(M)), backsolve(M, t(R)%*%c))
+    #a <- b - c + E %*% R %*%backsolve(( t(M)), backsolve(M, t(R)%*%c))
+    a <- b - c + E %*% R %*%solve(M, t(R)%*%c)
     f = K%*%a
 
     objective0 <- objective(a,f)
@@ -513,19 +514,19 @@ pred_mc_laplace <- function(X_learn, y_learn, K_list, f_mode, cov_list, x_input,
   for(item in E_list){
     M <- M + item
   }
-  M <- chol(M)
+  #M <- chol(M)
 
   for( c in seq_len(C)){
     k_c <- cov_cross(X_learn, list(x_input), cov_list[[c]])
     mu[c] <-  t(y_learn[((c-1)*n+1):(c*n)])%*%k_c
     b <- E_list[[c]]%*% k_c
-    g <- E_list[[c]]%*%(backsolve(t(M), backsolve(M, b)))
+    g <- E_list[[c]]%*%(solve(M, b))
 
     for(d in seq_len(C)){
       k_d <- cov_cross(X_learn, list(x_input), cov_list[[d]])
       Sigma[c,d] <- t(g) %*% k_d
     }
-    Sigma[c,c] <- Sigma[c,c] + cov_cross(list(x_input), list(x_input), cov_list[[c]]) -
+    Sigma[c,c] <- Sigma[c,c] + cov_cross(list(x_input), list(x_input), cov_list[[c]]) +
       t(b)%*%k_c
   }
 
@@ -545,18 +546,18 @@ pred_mc_laplace <- function(X_learn, y_learn, K_list, f_mode, cov_list, x_input,
 ## Class for more-user friendly multiclass laplace approximation
 R6::R6Class("gp_classification",
             public = list(
-#' Generating a new 'gp_classification' object
-#'
-#' @param n  number of classes, that are used
-#' @param covslist of length n, with names of the covariance functions, that
-#' should be used. Per default squared_exp
-#'
-#' @return a new 'gp_classification' object
-#' @export
-#'
-#' @examples
-#' mcgp <- gp_classification$new(n = 2)
-#'
+              #' Generating a new 'gp_classification' object
+              #'
+              #' @param n  number of classes, that are used
+              #' @param covslist of length n, with names of the covariance functions, that
+              #' should be used. Per default squared_exp
+              #'
+              #' @return a new 'gp_classification' object
+              #' @export
+              #'
+              #' @examples
+              #' mcgp <- gp_classification$new(n = 2)
+              #'
               initialize = function(n, covs = rep("squared_exp",n)){
                 private$number_categories <- n
                 if(!length(covs)==n)
@@ -567,36 +568,36 @@ R6::R6Class("gp_classification",
                   private$covariances[[i]]<-private$gp_list[[i]]$get_cov()
                 }
               },
-#' Adding data to 'gp_classification'-object
-#'
-#' @param X_learn a list of points, a matrix or a data.frame of the points with
-#' known input data
-#' @param y vector of class labels (more details in details)
-#'
-#' @return modified 'gp_classification'-object
-#' @export
-#' @details
-#' Assuming n points, for which the right labeling is known, and C possible
-#' classes, than this vector is build up like this:
-#'
-#' - for each class, we consider the vector y_c, which has length n and whose
-#' entries are defined as 1, if point i belongs to class c, or 0 otherwise.
-#'
-#'- y is created by joining all y_c - vectors.
-#' @examples
-#' mcgp <- gp_classification$new(n = 2)
-#' y <- c(
-#'   c(0,1),       #first point belongs to the first class, second point doesn't
-#'   c(1,0)        #second point belongs to the first class, first point doesn't
-#' )
-#'
-#' X_learn <- list(
-#'   c(1,2,3),
-#'   c(-1,-2,-3)
-#' )
-#'
-#' mcgp$add_data(X_learn, y)
-#'
+              #' Adding data to 'gp_classification'-object
+              #'
+              #' @param X_learn a list of points, a matrix or a data.frame of the points with
+              #' known input data
+              #' @param y vector of class labels (more details in details)
+              #'
+              #' @return modified 'gp_classification'-object
+              #' @export
+              #' @details
+              #' Assuming n points, for which the right labeling is known, and C possible
+              #' classes, than this vector is build up like this:
+              #'
+              #' - for each class, we consider the vector y_c, which has length n and whose
+              #' entries are defined as 1, if point i belongs to class c, or 0 otherwise.
+              #'
+              #'- y is created by joining all y_c - vectors.
+              #' @examples
+              #' mcgp <- gp_classification$new(n = 2)
+              #' y <- c(
+              #'   c(0,1),       #first point belongs to the first class, second point doesn't
+              #'   c(1,0)        #second point belongs to the first class, first point doesn't
+              #' )
+              #'
+              #' X_learn <- list(
+              #'   c(1,2,3),
+              #'   c(-1,-2,-3)
+              #' )
+              #'
+              #' mcgp$add_data(X_learn, y)
+              #'
               add_data = function(X_learn, y){
                 n <- private$number_categories
                 y <- unlist(y)
@@ -616,25 +617,25 @@ R6::R6Class("gp_classification",
                 private$X_learn <- c(private$X_learn,X_learn)
                 private$set_mode()
               },
-#' Getting list of covariance matrices
-#'
-#' @return list of covariance matrices, each class has it's own label
-#' @export
-#'
-#' @examples
-#' mcgp <- gp_classification$new(n = 2)
-#' y <- c(
-#'   c(0,1),       #first point belongs to the first class, second point doesn't
-#'   c(1,0)        #second point belongs to the first class, first point doesn't
-#' )
-#'
-#' X_learn <- list(
-#'   c(1,2,3),
-#'   c(-1,-2,-3)
-#' )
-#'
-#' mcgp$add_data(X_learn, y)
-#' mcgp$get_K_list()
+              #' Getting list of covariance matrices
+              #'
+              #' @return list of covariance matrices, each class has it's own label
+              #' @export
+              #'
+              #' @examples
+              #' mcgp <- gp_classification$new(n = 2)
+              #' y <- c(
+              #'   c(0,1),       #first point belongs to the first class, second point doesn't
+              #'   c(1,0)        #second point belongs to the first class, first point doesn't
+              #' )
+              #'
+              #' X_learn <- list(
+              #'   c(1,2,3),
+              #'   c(-1,-2,-3)
+              #' )
+              #'
+              #' mcgp$add_data(X_learn, y)
+              #' mcgp$get_K_list()
               get_K_list = function(){
                 n <- private$number_categories
                 l <- list()
@@ -643,96 +644,96 @@ R6::R6Class("gp_classification",
                 }
                 return(l)
               },
-#' Getting list of learning input data
-#'
-#' @return list of learning input data
-#' @export
-#'
-#' @examples
-#' mcgp <- gp_classification$new(n = 2)
-#' y <- c(
-#'   c(0,1),       #first point belongs to the first class, second point doesn't
-#'   c(1,0)        #second point belongs to the first class, first point doesn't
-#' )
-#'
-#' X_learn <- list(
-#'   c(1,2,3),
-#'   c(-1,-2,-3)
-#' )
-#'
-#' mcgp$add_data(X_learn, y)
-#' mcgp$get_X()
-#'
+              #' Getting list of learning input data
+              #'
+              #' @return list of learning input data
+              #' @export
+              #'
+              #' @examples
+              #' mcgp <- gp_classification$new(n = 2)
+              #' y <- c(
+              #'   c(0,1),       #first point belongs to the first class, second point doesn't
+              #'   c(1,0)        #second point belongs to the first class, first point doesn't
+              #' )
+              #'
+              #' X_learn <- list(
+              #'   c(1,2,3),
+              #'   c(-1,-2,-3)
+              #' )
+              #'
+              #' mcgp$add_data(X_learn, y)
+              #' mcgp$get_X()
+              #'
               get_X = function(){
                 return(private$X_learn)
               },
-#' Getting list of learning input labels
-#'
-#' @return list of learning input labels
-#' @export
-#'
-#' @examples
-#' mcgp <- gp_classification$new(n = 2)
-#' y <- c(
-#'   c(0,1),       #first point belongs to the first class, second point doesn't
-#'   c(1,0)        #second point belongs to the first class, first point doesn't
-#' )
-#'
-#' X_learn <- list(
-#'   c(1,2,3),
-#'   c(-1,-2,-3)
-#' )
-#'
-#' mcgp$add_data(X_learn, y)
-#' mcgp$get_y()
+              #' Getting list of learning input labels
+              #'
+              #' @return list of learning input labels
+              #' @export
+              #'
+              #' @examples
+              #' mcgp <- gp_classification$new(n = 2)
+              #' y <- c(
+              #'   c(0,1),       #first point belongs to the first class, second point doesn't
+              #'   c(1,0)        #second point belongs to the first class, first point doesn't
+              #' )
+              #'
+              #' X_learn <- list(
+              #'   c(1,2,3),
+              #'   c(-1,-2,-3)
+              #' )
+              #'
+              #' mcgp$add_data(X_learn, y)
+              #' mcgp$get_y()
               get_y = function(){
                 return(private$y_learn)
               },
-#' Getting list of used covariance functions
-#'
-#' @return list of used covariance functions
-#' @export
-#'
-#' @examples
-#' mcgp <- gp_classification$new(n = 2)
-#' y <- c(
-#'   c(0,1),       #first point belongs to the first class, second point doesn't
-#'   c(1,0)        #second point belongs to the first class, first point doesn't
-#' )
-#'
-#' X_learn <- list(
-#'   c(1,2,3),
-#'   c(-1,-2,-3)
-#' )
-#'
-#' mcgp$add_data(X_learn, y)
-#' mcgp$get_covariances()
+              #' Getting list of used covariance functions
+              #'
+              #' @return list of used covariance functions
+              #' @export
+              #'
+              #' @examples
+              #' mcgp <- gp_classification$new(n = 2)
+              #' y <- c(
+              #'   c(0,1),       #first point belongs to the first class, second point doesn't
+              #'   c(1,0)        #second point belongs to the first class, first point doesn't
+              #' )
+              #'
+              #' X_learn <- list(
+              #'   c(1,2,3),
+              #'   c(-1,-2,-3)
+              #' )
+              #'
+              #' mcgp$add_data(X_learn, y)
+              #' mcgp$get_covariances()
               get_covariances = function(){
                 return(private$covariances)
               },
-#' Getting class label probabilities
-#'
-#' @param x_input numeric vector of input data, where you want to get the prediction
-#' @param n_samples number of samples to get probabilities using monte-carlo method
-#'
-#' @return vector of probabiilties for each label
-#' @export
-#'
-#' @examples
-#' mcgp <- gp_classification$new(n = 2)
-#' y <- c(
-#'   c(0,1),       #first point belongs to the first class, second point doesn't
-#'   c(1,0)        #second point belongs to the first class, first point doesn't
-#' )
-#'
-#' X_learn <- list(
-#'   c(1,2,3),
-#'   c(-1,-2,-3)
-#' )
-#'
-#' mcgp$add_data(X_learn, y)
-#' mcgp$get_prediction(c(1,2,4))
-#'
+              #' Getting class label probabilities
+              #'
+              #' @param x_input numeric vector of input data, where you want to get the prediction
+              #' @param n_samples number of samples to get probabilities using monte-carlo method
+              #'
+              #' @return vector of probabiilties for each label
+              #' @export
+              #'
+              #' @examples
+              #' mcgp <- gp_classification$new(n = 2)
+              #' y <- c(
+              #'   c(0,1),       #first point belongs to the first class, second point doesn't
+              #'   c(1,0)        #second point belongs to the first class, first point doesn't
+              #' )
+              #'
+              #' X_learn <- list(
+              #'   c(1,2,3),
+              #'   c(-1,-2,-3)
+              #' )
+              #'
+              #' mcgp$add_data(X_learn, y)
+              #' mcgp$get_prediction(c(1,2,4))
+              #'
               get_prediction = function(x_input, n_samples = 1000){
                 f_mode <- private$f_mode
                 K_list <- self$get_K_list()
@@ -746,32 +747,32 @@ R6::R6Class("gp_classification",
                 pred_mc_laplace(X_learn,y, K_list, f_mode, covs, x_input, n_samples)
               },
 
-#' Setting parameters
-#'
-#' @param index number of the class label, whose covariance function should be
-#' modified
-#' @param cov_name character name of the covariance function that should be used.
-#' See ?set_cov to get further informations about the possible functions
-#' @param parameter_list named list of parameters, that should be used
-#'
-#' @details See ?set_cov or ?set_parameter for further information about the possible
-#' values of cov_name or parameter_list
-#' @export
-#'
-#' @examples
-#' mcgp <- gp_classification$new(n = 2)
-#' y <- c(
-#'   c(0,1),       #first point belongs to the first class, second point doesn't
-#'   c(1,0)        #second point belongs to the first class, first point doesn't
-#' )
-#'
-#' X_learn <- list(
-#'   c(1,2,3),
-#'   c(-1,-2,-3)
-#' )
-#'
-#' mcgp$add_data(X_learn, y)
-#' mcgp$set_parameters(1, "linear", list(sigma = c(1,1,1)))
+              #' Setting parameters
+              #'
+              #' @param index number of the class label, whose covariance function should be
+              #' modified
+              #' @param cov_name character name of the covariance function that should be used.
+              #' See ?set_cov to get further informations about the possible functions
+              #' @param parameter_list named list of parameters, that should be used
+              #'
+              #' @details See ?set_cov or ?set_parameter for further information about the possible
+              #' values of cov_name or parameter_list
+              #' @export
+              #'
+              #' @examples
+              #' mcgp <- gp_classification$new(n = 2)
+              #' y <- c(
+              #'   c(0,1),       #first point belongs to the first class, second point doesn't
+              #'   c(1,0)        #second point belongs to the first class, first point doesn't
+              #' )
+              #'
+              #' X_learn <- list(
+              #'   c(1,2,3),
+              #'   c(-1,-2,-3)
+              #' )
+              #'
+              #' mcgp$add_data(X_learn, y)
+              #' mcgp$set_parameters(1, "linear", list(sigma = c(1,1,1)))
               set_parameters = function(index, cov_name=NULL, parameter_list=NULL){
                 if(is.null(index))
                   stop(stringr::str_glue("index has to be between 1 and {private$number_categories}"))
@@ -782,10 +783,10 @@ R6::R6Class("gp_classification",
 
                 if(!is.null(cov_name))
                   private$gp_list[[index]] %>%
-                    set_cov(cov_name)
+                  set_cov(cov_name)
                 if(!is.null(parameter_list))
                   private$gp_list[[index]] %>%
-                    set_parameter(parameter_list)
+                  set_parameter(parameter_list)
                 private$set_mode()
               }
             ),
@@ -805,5 +806,4 @@ R6::R6Class("gp_classification",
               input_dimension = NULL
             )
 ) -> gp_classification
-
 
