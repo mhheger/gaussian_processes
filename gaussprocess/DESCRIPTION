@@ -1,11 +1,15 @@
 Package: gaussprocess
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Regression and Classification Using Gaussian Processes
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Authors@R: c(
+  person("Markus", "Fahrländer", email = "uo223@uni-heidelberg.de"", role = c("cre", "aut") ),
+  person("Alexandra", "Kowalewski", email = "A.Kowalewski@stud.uni-heidelberg.de", role = c("cre", "aut")), 
+  person("Liva", "Diler", email = "liva.diler@stud.uni-heidelberg.de", role = c("cre", "aut")),
+  person("Manuel", "Heger", email = "manuel.heger@stud.uni-heidelberg.de", role = c("cre", "aut")))
+Description: This package can be used for solving regression and classification
+   tasks. Providing tools for optimizing hyperparameters used for Gaussian 
+   processes. There is also an app for more interactive work with GP. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
