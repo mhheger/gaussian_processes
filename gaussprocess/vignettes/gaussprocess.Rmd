@@ -3,8 +3,11 @@ title: "gaussprocess"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{gaussprocess}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r, include = FALSE}
@@ -12,7 +15,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(dplyr)
+library(dplyr, tidyverse)
 library(ggplot2)
 ```
 
@@ -64,7 +67,7 @@ The main idea of the `gp`-class is to provide one object, that carries
 all the important data, that belongs to a Gaussian process. This object
 can be modified via simple functions/methods as we will see now:
 
-<h4>initializing a new `gp`-instance</h4>
+#### initializing a new `gp`-instance 
 
 We simply use `new.gp()` to get a empty `gp`- instance.
 
@@ -94,7 +97,7 @@ the initialization of the object. We recommend using the squared
 exponential at the beginning, because most times, this will not cause
 any numerical matrix inversion issues.
 
-<h4>Adding data to a `gp`-instance</h4>
+#### Adding data to a `gp`-instance
 
 After bringing a `gp`-instance to life, we also want to feed it with
 data. We do this via `add_data(obj, X_learn, y_learn, noise)`. First we
@@ -132,7 +135,7 @@ p <- new.gp() %>%
 
 ```
 
-<h4>Getting first predictions</h4>
+#### Getting first predictions
 
 Now we already achieved a state, where we can get first predictions. For
 this we use the `get_prediction()`-function. The function takes two
@@ -157,11 +160,12 @@ p <- new.gp() %>%
  get_prediction(p,8)
 ```
 
-<h4>Visualizing</h4>
+#### Visualizing
 
-Maybe we are more interested in visualizing the results in a plot. For one-dimensional inputs this is possible via `plot()`. You can just
-pass the `gp`-instance to the `plot()`-function, add the start x-value
-and the end x-value and get a plot like this:
+Maybe we are more interested in visualizing the results in a plot. For
+one-dimensional inputs this is possible via `plot()`. You can just pass
+the `gp`-instance to the `plot()`-function, add the start x-value and
+the end x-value and get a plot like this:
 
 ```{r, fig.width = 5 , fig.align = "center"}
 x <- 1:6
@@ -170,10 +174,12 @@ p <- new.gp() %>%
   add_data(x,y,0.1) 
 plot(p,0,10)
 ```
-How to understand this plot: The black line in the middle represents the mean 
-value, the colored band marks the interval within the variance distance around the mean value. 
 
-<h4>Modifying a `gp`-instance</h4>
+How to understand this plot: The black line in the middle represents the
+mean value, the colored band marks the interval within the variance
+distance around the mean value.
+
+#### Modifying a `gp`-instance
 
 As we saw in the last example the predicted value falls towards zero
 outside the area, that is covered by the learning data. The reason is,
@@ -191,7 +197,7 @@ setter-functions are available:
 
 Let's start with the different covariance-functions:
 
-<h6>`set_cov()`</h6>
+###### `set_cov()`
 
 As we mentioned at the beginning, the covariance function can be changed
 after initialization. This can be done via `set_cov(<obj>, <cov_name>)`,
@@ -219,7 +225,7 @@ set_cov(p, "gamma_exp")
 plot(p,0,10)
 ```
 
-<h6>`set_parameter()`</h6>
+###### `set_parameter()`
 
 To change the (hyper-)parameters of the covariance functions, we can use
 the `set_parameter()` - function. There are two ways to pass the
@@ -237,6 +243,7 @@ p <- new.gp() %>%
 ```{r}
  set_parameter(p, l = 1, gamma = 1.3) 
 ```
+
 ```{r echo = TRUE}
 get_parameter(p)
 ```
@@ -262,7 +269,7 @@ get_parameter(p) #Getting all parameters saved in p
 get_parameter(p, used = TRUE) 
 ```
 
-<h6>`set_mean_fun()`</h6>
+###### `set_mean_fun()`
 
 There are some cases, where it could be advantageous to specifiy the
 mean function of the prior, for example if we already know, that the
@@ -298,7 +305,7 @@ testthat::expect_error(set_mean_fun(p, g))
 
 To get the currently used mean function just use `get_mean_fun()`.
 
-<h6>`set_noise()`</h6>
+###### `set_noise()`
 
 This is the last parameter, that can be changed by the user. The usage
 is straight forward:
@@ -314,9 +321,9 @@ can try to increase the noise value. According to the way the noise is
 included in the calculation, this may lead to diagonal-dominant
 matrices, which are numerical invertible. </i>
 
-<h4>Optimizing a `gp`-instance</h4>
+#### Optimizing a `gp`-instance
 
-<h6>`optimize_gp()`</h6>
+###### `optimize_gp()`
 
 You can use the optimization technique described above via the
 `optimize_gp()`-function. Just insert the `gp`-instance, you want to
@@ -355,14 +362,15 @@ p <- new.gp() %>%
    add_data(xx,yy,0.2)
 plot(p,-10,10)
 ```
+
 ```{r echo=FALSE}
 mise_1 <- integrate(function(x){(f(x)- sapply(x, function(y) get_prediction(p,y)$f_predict))^2}, -10,10)$value /20
 
 ```
 
-We see that the rough course of the graph can be deducted out of the plot of the
-Gaussian process, but especially the small deflections of the function are 
-represented less detailed. 
+We see that the rough course of the graph can be deducted out of the
+plot of the Gaussian process, but especially the small deflections of
+the function are represented less detailed.
 
 Let's optimize the the Gaussian process and look if the results
 improved:
@@ -371,19 +379,199 @@ improved:
 optimize_gp(p)
 plot(p,-10,10)
 ```
-Know we use the gamma-exponential covariance function and we see, that now also 
-small peaks are identifiable, especially in the area between -8 and 3. 
+
+Know we use the gamma-exponential covariance function and we see, that
+now also small peaks are identifiable, especially in the area between -8
+and 3.
+
 ```{r include=FALSE}
 mise_2 <- integrate(function(x){(f(x)- sapply(x, function(y) get_prediction(p,y)$f_predict))^2}, -10,10)$value/20 
 ```
-But beneath the visual comparison, we can also compare the MISE of those two 
-regression models: 
 
-| default-valued model | optimized model|
-|---|---|
-| `r mise_1`| `r mise_2`|
+But beneath the visual comparison, we can also compare the MISE of those
+two regression models:
 
-We can see, that the value is nearly halved by doing the optimization. 
+| default-valued model |  optimized model |
+|----------------------|------------------|
+| `r mise_1`           | `r mise_2`       |
+
+We can see, that the value is nearly halved by doing the optimization.
 
 ## Example of application:
+
+## Some words about classification:
+
+Besides regression problems Gaussian processes can also be applied on
+classification tasks, but according to the discreteness of the class
+labels, the computations are more complicated. The
+`gaussprocess`-package provides some basics to handle binary and
+multiclass-classification.
+
+#### the `gp_classification`-class
+
+The idea of the `gp_classification`-class is to provide a framework
+similar to the `gp`-class to handle data and necessary functionality as
+one unit. To reach more generality this class handles
+multiclass-predictions, but due to this it's not possible to interchange
+the used response function. The predictions of this class are based on
+the multi-softmax-function:
+$$ p(y_i^c = 1 | \mathbf{f_i}) = \frac{\exp(f_i^c)}{\sum_{c'}{}f_i^{c'}} $$\
+Here \$ f_i \$ stands for the value of the response function at training
+point \$ i\$, the superscript $c$ refers to the class $c$. The result
+can be interpreted as the possibility of class label $c$ at training
+point $i$.
+
+We do not want to boring you, so let's see, how we can get to
+predictions using the `gp_classification`-class.
+
+##### initializing a class object
+
+To initialize a new class instance, we just use the `$new()` method,
+that every R6 class provides. Here the instructor needs more
+information:
+
+-   `n`: number of class labels, that we distinguish. This argument must
+    be set at the initialization
+-   `covs`: vector of the names of the covariance functions used, each
+    class gets its own covariance function. Per default the squared
+    exponential is used. All covariance functions known from the
+    `gp`-class are available.
+
+<i> One fact about the relationship between `gp` and `gp_classification`:
+Every instance of the `gp_classification`-class hosts $C$ instances of the 
+`gp`-class, where $C$ is the number of class labels. Using these `gp`-class
+objects allows us, that we can get the variance-covariance matrix for each 
+class quite easy by using the `get_K()` function, moreover we are able to 
+save all the informations of class label about covariance functions, parameters 
+and data in seperate objects. 
+</i>
+
+In the following example, we initialize a new object assuming 3 different 
+class labels and using squared exponential for the first class, 
+gamma-exponential for the second class. 
+```{r}
+p_class <- gp_classification$new(n=3, c("squared_exp", "gamma_exp", "squared_exp"))
+```
+
+##### Adding data 
+After initalizing a new instance, we want to train the model using training 
+data. Here we can use the `add_data`-method of `gp_classification`. This method 
+takes two arguments: `X_learn` and `y`. 
+
+There is nothing new to say about `X_learn`, all the information named in the 
+section about regression and the `gp`-class is still true. So we just have to 
+describe, which format of `y` is needed. 
+
+Unfortunately, `y` is not allowed to be a vector just including a symbol for 
+each class, that shows, to which class the point belongs (this would be the
+next step of improvement). For the `add_data`-method, `y` has to be a numerical
+vector, just containing 0 or 1, where 1 indicates the belonging to a class.
+You can think about `y` as stacked vectors $y^c$ of length $n$ (assuming $n$ data 
+points in the training set). The value at position $i$ in $y^c$ denotes, if 
+data point $i$ is member of class $c$ or not. 
+
+Ok, this explanation was more complicated than it is in real life. 
+Let's make a small example: 
+Assume we have 3 training points $x_1,x_2,x_3$ and two classes $c_1$ and $c_2$.
+The following table summarizes the labeling of those points: 
+
+| point | label | 
+| ---|---|
+| $x_1$ | $c_1$|
+|$x_2$|$c_2$|
+|$x_3$|$c_1$|
+
+Based on this information we can make up the vectors $y^{c_i}$:
+
+- $y^{c_1} = (1,0,1)$
+- $y^{c_2} = (0,1,0)$
+
+And using this information the $y$-vector would be $y = (1,0,1,0,1,0)$.
+
+Let's do a more complicated example using the `gp_classification`-class.
+We already initialized an object using 3 classes. 
+Now we want to classify points in the plane, if they either belong 
+to the unit ball around $(4,1)$ (class $1$), the unit ball around the  $(1,1)$
+(class $2$) or none of those (class $3$). 
+We will create 30 data points uniformly distributed in the 2x6 square 
+and create the vector y. 
+
+```{r}
+train_data <- tibble (x1 = runif(n=30, 0, 6),
+                      x2 = runif(n=30, 0, 2))
+train_data %>%  mutate( c1 = as.integer(((x1-4)^2+(x2-1)^2) <= 1), 
+                        c2 = as.integer(((x1-1)^2+(x2-1)^2) <= 1), 
+                        c3 = rep(1, 30) - c1 -c2) -> train_data
+y_train <- c(unlist(train_data[,"c1"]), 
+             unlist(train_data[,"c2"]),
+             unlist(train_data[,"c3"])
+             )
+y_train <- unname(y_train)
+```
+
+Now we can add the data to `p_class` like this: 
+
+```{r}
+p_class$add_data(train_data[c("x1", "x2")], y_train)
+```
+
+### Getting predictions 
+Now `p_class` is a fully trained (but not optimized) Gaussian process for 
+classification and so we want to get predictions. 
+For this aim, we simply use the `get_prediction()` method. This takes two 
+arguments: 
+
+- `x_input`: coordinates of the point, for which we want to get a prediction
+- `n_samples`: Number of samples, that some intern Monte-Carlo approach runs. 
+Normally you don't need to consider this. 
+
+Let's see, how the output looks like: 
+```{r}
+x_input <- c(1,1.5) # real class label: 2
+p_class$get_prediction(x_input) -> prediction
+prediction
+```
+The method returns a numeric vector. The number represent the predicted 
+probabilities for the different classes. So in this example, the 
+probability, that $(1,1.5)$ belongs to class $2$ is `r prediction[[2]]``. 
+A possible decision rule for getting a prediction on the class labels is taking 
+the class with maximum possibility. So in this case our prediction would be 
+class $2$ and thus correct. 
+
+### Modifying a `gp_classification`-instance
+As mentioned above a `gp_classification`-instance consists of several `gp`-instances.
+For each`gp`-object we can modify the used covariance function and its parameters
+via `set_parameters()`-method. 
+This method has the following arguments: 
+
+- `index`: an integer value, referring to the number of the class, whose 
+paramters should be modified, this argument is necessary.
+- `cov_name`: name of the covariance function that should be used, this is an 
+optional argument 
+- `parameter_list`: named list of the parameters (their values), that should be 
+set. This argument is as well optional.
+
+```{r}
+p_class$set_parameters(2, cov_name = "rational", parameter_list = list(alpha = 1))
+```
+
+<i> 
+Note: Until now there is no method for optimizing a classification Gaussian 
+process implemented in this package. You could use a Grid Search for implementing 
+some kind of optimization tool. You might ask, why not just optimizing the 
+intern `gp`-instances. But according to the differences between regression and 
+classification problems and the fact that we work with Laplace Approximation 
+of the unknown real distribution this will not surely lead to an optimization. 
+</i>
+
+
+
+
+
+
+
+
+
+
+
 
