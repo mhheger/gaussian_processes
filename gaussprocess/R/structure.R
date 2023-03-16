@@ -537,6 +537,8 @@ get_cov <- function(obj){
 get_data <- function(obj, df = T){
   if(!("gp" %in% class(obj)))
     stop("obj has to be a member of class 'gp'")
+  if(is.null(obj$get_input_dim()))
+    return(NULL)
   if(df){
     data <- obj$get_data()
     X_learn <- data$X_learn

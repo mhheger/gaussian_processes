@@ -566,13 +566,13 @@ R6::R6Class("gp_classification",
                   private$covariances[[i]]<-private$gp_list[[i]]$get_cov()
                 }
               },
-              #' Adding data to 'gp_classification'-object
+              #' Adding data to "gp_classification"-object
               #'
               #' @param X_learn a list of points, a matrix or a data.frame of the points with
               #' known input data
               #' @param y vector of class labels (more details in details)
               #'
-              #' @return modified 'gp_classification'-object
+              #' @return modified "gp_classification"-object
               #' @export
               #' @details
               #' Assuming n points, for which the right labeling is known, and C possible

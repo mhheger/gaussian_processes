@@ -1,7 +1,8 @@
 library(shiny)
 # testing manual data input -----------------------------------------------
 test_that("Manual input leads to correct datatable" , {
-  testServer(server, {
+  obj =NULL
+  testServer(testing_server, {
     session$setInputs(
       input_dim = 2,
       cov = "squared_exp",
@@ -29,7 +30,7 @@ test_that("prediction works correct",{
   g <-new.gp() %>%
     add_data(c(1,2),3,1) %>%
     get_prediction(c(1,2))
-  testServer(server, {
+  testServer(testing_server, {
     session$setInputs(
       input_dim = 2,
       cov = "squared_exp",
@@ -54,7 +55,7 @@ test_that("prediction works correct",{
 
 # testing handling of false inputs  ---------------------------------------
 test_that("False input do not cause crash", {
-  testServer(server, {
+  testServer(testing_server, {
     session$setInputs(
       input_dim = 2,
       cov = "squared_exp",
