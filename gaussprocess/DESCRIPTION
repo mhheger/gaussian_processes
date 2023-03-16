@@ -3,10 +3,10 @@ Type: Package
 Title: Regression and Classification Using Gaussian Processes
 Version: 0.1.0
 Authors@R: c(
-  person("Markus", "Fahrländer", email = "uo223@uni-heidelberg.de"", role = c("cre", "aut") ),
-  person("Alexandra", "Kowalewski", email = "A.Kowalewski@stud.uni-heidelberg.de", role = c("cre", "aut")), 
-  person("Liva", "Diler", email = "liva.diler@stud.uni-heidelberg.de", role = c("cre", "aut")),
-  person("Manuel", "Heger", email = "manuel.heger@stud.uni-heidelberg.de", role = c("cre", "aut")))
+   person("Markus", "Fahrlaender", email = "uo223@uni-heidelberg.de", role = c("aut") ),
+   person("Alexandra", "Kowalewski", email = "A.Kowalewski@stud.uni-heidelberg.de", role = c("aut")), 
+   person("Liva", "Diler", email = "liva.diler@stud.uni-heidelberg.de", role = c("aut")),
+   person("Manuel", "Heger", email = "manuel.heger@stud.uni-heidelberg.de", role = c("cre", "aut")))
 Description: This package can be used for solving regression and classification
    tasks. Providing tools for optimizing hyperparameters used for Gaussian 
    processes. There is also an app for more interactive work with GP. 
@@ -14,12 +14,19 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.2.3
 Imports: 
-    dplyr,
     magrittr,
     mnormt,
     R6,
-    stringr
+    stringr,
+    ggplot2,
+    plotly,
+    tibble,
+    shiny,
+    shinyFeedback
+VignetteBuilder: knitr

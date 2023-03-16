@@ -30,10 +30,10 @@ squared_exp_cov <- function(x,y, l) {
   } else if(!is.numeric(sqrt(sum((x-y)^2)))) {
     stop("r has to be a real parameter!")
   } else if(l < 0) {
-    stop("the parameter l has to be positive!") 
+    stop("the parameter l has to be positive!")
   } else {
     exp(- ((sqrt(sum((x-y)^2))) ^ 2 )/(2*l^2))
-  } 
+  }
 }
 
 
@@ -42,7 +42,7 @@ exp_cov <- function(x,y,l) {
   if(is.null(x) | is.null(y) | is.null(l)) {
     NA
   } else if(!is.numeric((sqrt(sum((x-y)^2))))) {
-    stop("input vectors must be numeric!") 
+    stop("input vectors must be numeric!")
   } else {
     exp(-((sqrt(sum((x-y)^2)))/l))
   }
@@ -59,7 +59,7 @@ gamma_exp_cov <- function(x,y, l, gamma) {
     stop("l must be positive!")
   } else {
     exp(
-      -((sqrt(sum((x-y)^2))) / l) ^ gamma 
+      -((sqrt(sum((x-y)^2))) / l) ^ gamma
     )
   }
 }
@@ -69,7 +69,7 @@ rational_quadratic_cov <- function(x,y, l, alpha) {
   if(is.null(x) | is.null(y) | is.null(alpha) | is.null(l)) {
     NA
   }
-  else if(l <= 0 | alpha <= 0) 
+  else if(l <= 0 | alpha <= 0)
     stop("l and alpha have to be positive!")
   else {(
     1 + ((sqrt(sum((x-y)^2))) ^ 2) / (2 * alpha * l ^ 2)

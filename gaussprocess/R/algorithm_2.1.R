@@ -62,7 +62,7 @@ predict_gauss <- function(X_learn, y_learn, cov, noise, x_input, mean_fun = 0, .
   L <- chol(K + diag(x=noise^2, nrow = nrow(K)), pivot = TRUE)
 
   tryCatch(
-    alpha <- .Internal(La_solve(K + diag(x=noise^2, nrow = nrow(K)),y_learn, .Machine$double.eps)),
+    alpha <- solve(K + diag(x=noise^2, nrow = nrow(K)),y_learn),
     error = function(cond) return(NaN)
   )
 

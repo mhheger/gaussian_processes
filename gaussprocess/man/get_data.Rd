@@ -28,5 +28,4 @@ get_data(p1)
 get_data(p1, FALSE)
 #output is a list of listed points
 
-
 }

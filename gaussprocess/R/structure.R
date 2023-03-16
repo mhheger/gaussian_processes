@@ -125,34 +125,43 @@ R6::R6Class("gp",
 
               optim_parameter = function() {optimize_parameters(self)} ,
 
-              plot = function(x_start, x_end, name_x="x", name_y="y",mode = T,title = "") {
+#' Plotting a `gp`-instance
+#'
+#' @param x_start start value in x-direction
+#' @param x_end end value in x-direction
+#' @param n_samples if you want to plot a sampled graph, you can specify the number
+#' of samplings, that should be done.
+#' @param n_points number of points that are used to generate the plot
+#' @param sampled_graph if a sampled graph should be plotted (TRUE) or not (FALSE)
+#' @param plotly_obj if the return value should be a plotly object. FALSE per default
+#'
+#' @return either a ggplot or a plotly object
+#'
+#' @examples
+#' p <- new.gp()
+#' p <- add_data(x=1:10, y = sin(1:10))
+#' # not a sampled graph
+#' plot(p, x_start = -3, x_end = 8)
+#' # sampled graph
+#' plot(p, x_start = -3, x_end = 8, sampled_graph = T)
+#'
+#' l
+              plot = function(x_start= 0, x_end = 10, n_samples = 3, n_points = 100, sampled_graph = FALSE, plotly_obj=FALSE) {
+                if(is.null(private$input_dimension))
+                  stop("You have to add data before plotting")
+                if(any(!is.numeric(c(x_start, x_end, n_samples, n_points)))){
+                  arg_names <- c("x_start", "x_end", "n_samples", "n_points")
+                  stop(stringr::str_glue("{arg_names[!is.numeric(c(x_start, x_end, n_samples, n_points))]} has to be
+                                         numeric"))
+                }
+                if(x_start > x_end) stop("start value has to be smaller than end value")
+                if(!is.logical(sampled_graph)) stop("sampled_graph has to be a logical")
+                if(!is.logical(plotly_obj)) stop("plotly_obj has to be a logical")
+
                 if(private$input_dimension==1){
                   #getting learning points that are inside the plotted area
-                  x_input <- unlist(private$X_learn)
-                  ranged <- x_start <= x_input & x_input <= x_end
-                  y_input <- unlist(private$y_learn)
-                  input <- data.frame(xx=x_input[ranged],yy=y_input[ranged])
-
-                  #getting predicted values inside the intervall [x_start, x_end]
-                  range_x <- seq(x_start,x_end,len = 100)
-                  f <-c()
-                  var <-c()
-                  for(x in range_x){
-                    pred <- self$get_prediction(x)
-                    f <- c(f, pred$f_predict)
-                    var <- c(var, pred$var_f)
-                  }
-
-
-                  plot_data <- data.frame(x = range_x,y = f, min_f= f-var,max_f= f+var )
-
-                  plot <- ggplot2::ggplot(plot_data, aes(x,y))+
-                    geom_ribbon(aes(ymin = min_f,ymax =  max_f, fill = "variance"))+
-                    geom_line(aes(x,y))+
-                    labs(x = name_x, y = name_y, title = title ) +
-                    theme(legend.position = "left")
-                  if(mode) plot <- plot + geom_point(data=input, aes(xx,yy))
-                  plot
+                  if(sampled_graph) return(plot_gp_posterior(self, x_start, x_end, n_points, n_samples, plotly_obj ))
+                  return(plot_gp(self, x_start, x_end, n_points, plotly_obj))
                 }
               },
 
@@ -226,7 +235,7 @@ squared_exp <- function(x,y, par){
   squared_exp_cov(x,y,par$l)
 }
 constant <- function(x,y, par){
-  constant_cov(par$sigma0)
+  constant_cov(x,y,par$sigma0)
 }
 exponential <- function(x,y, par){
   exp_cov(x,y,par$l)
@@ -350,6 +359,7 @@ init_cov <- function(covname, sigma=0, l=1, alpha=1, sigma0=1, gamma=1){
 #' add_data(p1, X_learn = 1:10, y = 2:11)
 #' print(p1)
 #'
+#'@import R6
 new.gp <- function(cov_fun = "squared_exp"){
   cov_names <- names(cov_list)
   if(any(is.na(cov_fun))|any(is.null(cov_fun)))
@@ -531,7 +541,7 @@ get_cov <- function(obj){
 #' get_data(p1, FALSE)
 #' #output is a list of listed points
 #'
-#'
+#' @importFrom tibble tibble as_tibble
 get_data <- function(obj, df = T){
   if(!("gp" %in% class(obj)))
     stop("obj has to be a member of class 'gp'")
