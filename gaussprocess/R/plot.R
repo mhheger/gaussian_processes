@@ -6,7 +6,7 @@ library(plotly)
 
 #plot function based on image 2.4 from Williams and Rasmussen
 
-plot_gp <- function(gp, x_min=-5, x_max=5, n_points=100){
+plot_gp <- function(gp, x_min=-5, x_max=5, n_points=100, plotly_obj=FALSE){
   # Generate a grid of x values
   x_grid <- seq(x_min, x_max, length.out = n_points)
   
@@ -15,7 +15,7 @@ plot_gp <- function(gp, x_min=-5, x_max=5, n_points=100){
   var_f <- list()
   
   for(x in x_grid){
-    res <- predict_gauss2(gp, x)
+    res <- get_prediction(gp, x)
     
     # Extract prediction and variance from predictions
     f_predict <- append(f_predict, res$f_predict)
@@ -31,13 +31,16 @@ plot_gp <- function(gp, x_min=-5, x_max=5, n_points=100){
     geom_point(data = data.frame(x = X_learn, y = y_learn), aes(x = x, y = y), color = "red", size = 2) +
     xlab("Input") + ylab("Output")
   
-  # Convert to plotly object for interactivity
-  p <- ggplotly(p)
+  #Convert to plotly object for interactivity
+  if(plotly_obj == TRUE){
+    p <- ggplotly(p)
+  }
+  
   return(p)
 
 }
 
-plot_gp_posterior <- function(gp, x_min=-5, x_max=5, n_points=100, n_samples=5){
+plot_gp_posterior <- function(gp, x_min=-5, x_max=5, n_points=100, n_samples=5, plotly_obj=FALSE){
   # Generate a grid of x values
   x_grid <- seq(x_min, x_max, length.out = n_points)
   
@@ -47,7 +50,7 @@ plot_gp_posterior <- function(gp, x_min=-5, x_max=5, n_points=100, n_samples=5){
   
   for(i in seq_along(x_grid)){
     x <- x_grid[i]
-    res <- predict_gauss2(gp, x)
+    res <- get_prediction(gp, x)
     
     # Extract posterior samples and variance from predictions
     f_samples[[i]] <- rnorm(n_samples, res$f_predict, sqrt(res$var_f))
@@ -73,8 +76,10 @@ plot_gp_posterior <- function(gp, x_min=-5, x_max=5, n_points=100, n_samples=5){
     geom_point(data = df_samples, aes(x = x, y = y), color = "black", alpha = 0.2, size = 0.5) +
     xlab("Input") + ylab("Output")
   
-  # Convert to plotly object for interactivity
-  p <- ggplotly(p)
+  #Convert to plotly object for interactivity
+  if(plotly_obj == TRUE){
+    p <- ggplotly(p)
+  }
   return(p)
 }
 
