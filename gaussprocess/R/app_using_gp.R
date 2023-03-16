@@ -1,5 +1,10 @@
 library(shiny)
 
+#' Starting Shiny App to Work with GP-Objects
+#' @description Just run gp_app() to start the Shiny-App in your RStudio or
+#' browser
+#' @export
+
 gp_app <- function(){
 # Defining UI -------------------------------------------------------------
 parameter_tabs <- tabsetPanel(
