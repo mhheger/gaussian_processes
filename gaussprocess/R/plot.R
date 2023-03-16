@@ -1,11 +1,12 @@
 source("./algorithm_2.1.R")
+source("./structure.R")
+source("./covariance_functions.R")
 library(ggplot2)
 library(plotly)
 
 #plot function based on image 2.4 from Williams and Rasmussen
 
-plot_gp <- function(X_learn, y_learn, cov, noise=1, 
-                    x_min=-5, x_max=5, n_points=100){
+plot_gp <- function(gp, x_min=-5, x_max=5, n_points=100){
   # Generate a grid of x values
   x_grid <- seq(x_min, x_max, length.out = n_points)
   
@@ -14,7 +15,7 @@ plot_gp <- function(X_learn, y_learn, cov, noise=1,
   var_f <- list()
   
   for(x in x_grid){
-    res <- predict_gauss(X_learn, y_learn, cov, noise=1, x)
+    res <- predict_gauss2(gp, x)
     
     # Extract prediction and variance from predictions
     f_predict <- append(f_predict, res$f_predict)
@@ -36,8 +37,7 @@ plot_gp <- function(X_learn, y_learn, cov, noise=1,
 
 }
 
-plot_gp_posterior <- function(X_learn, y_learn, cov, noise=1,
-                              x_min=-5, x_max=5, n_points=100, n_samples=5){
+plot_gp_posterior <- function(gp, x_min=-5, x_max=5, n_points=100, n_samples=5){
   # Generate a grid of x values
   x_grid <- seq(x_min, x_max, length.out = n_points)
   
@@ -47,7 +47,7 @@ plot_gp_posterior <- function(X_learn, y_learn, cov, noise=1,
   
   for(i in seq_along(x_grid)){
     x <- x_grid[i]
-    res <- predict_gauss(X_learn, y_learn, cov, noise=1, x)
+    res <- predict_gauss2(gp, x)
     
     # Extract posterior samples and variance from predictions
     f_samples[[i]] <- rnorm(n_samples, res$f_predict, sqrt(res$var_f))
@@ -68,9 +68,9 @@ plot_gp_posterior <- function(X_learn, y_learn, cov, noise=1,
   # Create the plot
   p <- ggplot() +
     geom_line(data = df_posterior, aes(x = x, y = y), color = "blue") +
-    geom_ribbon(data = df_posterior, aes(x = x, ymin = ymin, ymax = ymax), alpha = 0.2, fill = "blue") +
+    geom_ribbon(data = df_posterior, aes(x = x, ymin = ymin, ymax = ymax), alpha = 0.2, fill = "green") +
     geom_point(data = data.frame(x = X_learn, y = y_learn), aes(x = x, y = y), color = "red", size = 2) +
-    geom_point(data = df_samples, aes(x = x, y = y), color = "blue", alpha = 0.2, size = 0.5) +
+    geom_point(data = df_samples, aes(x = x, y = y), color = "black", alpha = 0.2, size = 0.5) +
     xlab("Input") + ylab("Output")
   
   # Convert to plotly object for interactivity
@@ -82,11 +82,7 @@ plot_gp_posterior <- function(X_learn, y_learn, cov, noise=1,
 
 
 #example usage
-X_learn <- seq(-2, 2, length.out = 5)
-y_learn <- sin(X_learn)
-cov <- function(x, y) exp(-0.5 * (x - y) ^ 2)
-
-p1 <- plot_gp(X_learn, y_learn, cov)
-p1
-p2 <- plot_gp_posterior(X_learn, y_learn, cov)
-p2
+p <- new.gp(cov_fun = "squared_exp")
+add_data(p, 1:10, 1:10)
+plot_gp(p)
+plot_gp_posterior(p)
