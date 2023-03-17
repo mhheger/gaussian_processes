@@ -88,7 +88,7 @@ init_cov <- function(covname, sigma=0, l=1, alpha=1, sigma0=1, gamma=1){
 optimize_parameters <- function(X){
   #------initalizing start values ----------
   min <- Inf
-  best_parameters <- list(sigma = 0, l = 1, gamma = 1, alpha = 1, sigma0 = 1)
+  best_parameters <- list(sigma = numeric(X$get_input_dim()), l = 1, gamma = 1, alpha = 1, sigma0 = 1)
   best_method <- NULL
   solution <- list()
   start_parameters <- X$get_parameter()

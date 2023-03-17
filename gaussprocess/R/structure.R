@@ -883,8 +883,8 @@ set_mean_fun <- function(obj, mean_fun){
 optimize_gp <- function(obj){
   if(!("gp" %in% class(obj)))
     stop("obj has to be a member of class 'gp'")
-  obj$optim_parameter()
-  invisible(obj)
+
+  invisible(obj$optim_parameter())
 }
 
 
