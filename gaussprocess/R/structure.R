@@ -174,7 +174,7 @@ R6::R6Class("gp",
 #'
 #' @examples
 #' p <- new.gp()
-#' p <- add_data(x=1:10, y = sin(1:10))
+#' p <- gaussprocess::add_data(p, 1:10,sin(1:10))
 #' # not a sampled graph
 #' plot(p, x_start = -3, x_end = 8)
 #' # sampled graph

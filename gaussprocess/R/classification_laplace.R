@@ -91,7 +91,7 @@ response_list <- list(logit =logit, probit = probit)
 #' @return  mode: value of the mode function
 #'          log_marginal_likelihood: logarithmic marginal likelihood of the
 #'          result
-#'
+#' @export
 #' @examples
 #' find_mode_laplace(  K = matrix( 1:4, nrow= 2),
 #'                     y = c(1,-1),
