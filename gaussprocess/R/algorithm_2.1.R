@@ -24,7 +24,6 @@
 #'                 mean_fun = function(x) x
 #')
 #'
-#'
 predict_gauss <- function(X_learn, y_learn, cov, noise, x_input, mean_fun = 0, ...){
 
   #do some converting to get either atomic vectors or list of vectors
@@ -161,7 +160,7 @@ predict_gauss2 <- function(X, x_input, cholesky = F){
 #' @param n the dimension of each vector in the list that is returned
 #'
 #' @return a list of vectors of length n
-#'
+#' @export
 #' @examples
 #' convert_to_list(matrix(1:6, nrow = 2), n= 2)
 convert_to_list <- function(x, n){
@@ -189,7 +188,7 @@ convert_to_list <- function(x, n){
 #' @param cov covariance function, that returns a scalar
 #' @param ... further parameters of cov, they have to be named.
 #' @return variance-covariance-matrix of dimension 'length(x)':'length(y)'
-#'
+#' @export
 #' @examples
 #' cov_cross(list(1,2,3), list(1,2), cov = function(x,y) x*y)
 #'

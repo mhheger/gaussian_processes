@@ -40,5 +40,4 @@ predict_gauss(  X_learn = 1:10,
                 mean_fun = function(x) x
 )
 
-
 }

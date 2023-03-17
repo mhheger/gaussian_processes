@@ -2,11 +2,11 @@
 % Please edit documentation in R/structure.R
 \name{gp}
 \alias{gp}
-\title{Plotting a `gp`-instance}
+\title{#Use add_data() instead}
 \description{
-Plotting a `gp`-instance
+#Use add_data() instead
 
-Plotting a `gp`-instance
+#Use add_data() instead
 }
 \examples{
 
@@ -21,7 +21,7 @@ plot(p, x_start = -3, x_end = 8)
 # sampled graph
 plot(p, x_start = -3, x_end = 8, sampled_graph = T)
 
-l
+#Printing a `gp` instance
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -56,6 +56,22 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$add_data(x, y, noise = 0.1)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{numeric vector}
+
+\item{\code{y}}{numeric vector}
+
+\item{\code{noise}}{numeric vector}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Use ?add_data() to get to the real-used function
+#Use get_cov_name() instead
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-get_cov_name"></a>}}
@@ -63,6 +79,11 @@ l
 \subsection{Method \code{get_cov_name()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{gp$get_cov_name()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Use ?get_cov_name() to get to the real-used function
+#Use get_K() instead
 }
 
 }
@@ -74,6 +95,11 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$get_K()}\if{html}{\out{</div>}}
 }
 
+\subsection{Details}{
+Use ?get_K() to get to the real-used function
+#Use get_cov()
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-get_cov"></a>}}
@@ -81,6 +107,11 @@ l
 \subsection{Method \code{get_cov()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{gp$get_cov()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Use ?get_cov() to get to the real-used function
+#Use get_data() instead
 }
 
 }
@@ -92,6 +123,11 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$get_data()}\if{html}{\out{</div>}}
 }
 
+\subsection{Details}{
+Use ?get_data() to get to the real-used function
+#Use get_parameter() instead
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-get_parameter"></a>}}
@@ -99,6 +135,11 @@ l
 \subsection{Method \code{get_parameter()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{gp$get_parameter()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Use ?get_parameter() to get to the real-used function
+#Use get_mean_fun() instead
 }
 
 }
@@ -110,6 +151,11 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$get_mean_fun()}\if{html}{\out{</div>}}
 }
 
+\subsection{Details}{
+Use ?get_mean_fun() to get to the real-used function
+#Use get_noise() instead
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-get_noise"></a>}}
@@ -117,6 +163,11 @@ l
 \subsection{Method \code{get_noise()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{gp$get_noise()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Use ?get_noise() to get to the real-used function
+#Use get_prediction() instead
 }
 
 }
@@ -128,6 +179,18 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$get_prediction(input)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{input}}{numeric vector}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Use ?get_prediction() to get to the real-used function
+#Use get_log_marginal_likelihood() instead
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-get_log_marginal_likelihood"></a>}}
@@ -135,6 +198,11 @@ l
 \subsection{Method \code{get_log_marginal_likelihood()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{gp$get_log_marginal_likelihood()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Use ?get_log_marginal_likelihood to get to the real-used function
+#getting input dimension
 }
 
 }
@@ -146,6 +214,10 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$get_input_dim()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+input dimension
+#Use set_cov() instead
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-set_cov"></a>}}
@@ -153,6 +225,18 @@ l
 \subsection{Method \code{set_cov()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{gp$set_cov(cov)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{cov}}{name of the covariance function}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Use ?set_cov() to get to the real-used function
+#Use set_parameter() instead
 }
 
 }
@@ -170,6 +254,29 @@ l
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sigma}}{numeric vector}
+
+\item{\code{l}}{numeric vector}
+
+\item{\code{alpha}}{numeric vector}
+
+\item{\code{sigma0}}{numeric vector}
+
+\item{\code{gamma}}{numeric vector}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Use ?set_parameter to get to the real-used function
+#Use set_noise() instead
+}
+
+\subsection{Returns}{
+updated element
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-set_noise"></a>}}
@@ -179,6 +286,21 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$set_noise(noise)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{noise}}{numeric vector}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Use ?set_noise to get to the real-used function
+#Use ?set_mean_fun instead
+}
+
+\subsection{Returns}{
+updated element
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-set_mean_fun"></a>}}
@@ -188,6 +310,21 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$set_mean_fun(f)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{f}}{numeric vector or closure}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Use ?set_mean_fun to get to the real-used function
+#Use optim_gp() instead
+}
+
+\subsection{Returns}{
+updated element
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-optim_parameter"></a>}}
@@ -197,6 +334,10 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$optim_parameter()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+updated element
+#Plotting a `gp`-instance
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-plot"></a>}}
@@ -243,7 +384,7 @@ plot(p, x_start = -3, x_end = 8)
 # sampled graph
 plot(p, x_start = -3, x_end = 8, sampled_graph = T)
 
-l
+#Printing a `gp` instance
 }
 \if{html}{\out{</div>}}
 
@@ -258,6 +399,10 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$print()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+print element
+#Updating marginal likelihood
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-update_marginal_likelihood"></a>}}
@@ -267,6 +412,9 @@ l
 \if{html}{\out{<div class="r">}}\preformatted{gp$update_marginal_likelihood()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+modified element
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-gp-clone"></a>}}

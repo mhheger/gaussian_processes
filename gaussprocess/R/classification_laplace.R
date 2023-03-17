@@ -549,7 +549,7 @@ R6::R6Class("gp_classification",
               #'# Generating a new 'gp_classification' object
               #'
               #' @param n  number of classes, that are used
-              #' @param covslist of length n, with names of the covariance functions, that
+              #' @param covs of length n, with names of the covariance functions, that
               #' should be used. Per default squared_exp
               #'
               #' @return a new 'gp_classification' object

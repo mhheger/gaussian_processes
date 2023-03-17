@@ -2,9 +2,17 @@ library(ggplot2)
 library(plotly)
 
 #plot function based on image 2.4 from Williams and Rasmussen
+#' plotting a gp instance
+#' @param gp gp instance
+#' @param x_min start value x_axis
+#' @param x_max end value x-axiy
+#' @param n_points number of points generated
+#' @param plotly_obj plotly object or not
+#'
 #'@importFrom stats dnorm quantile rnorm var integrate
 #'@import plotly
 #'@import ggplot2
+
 plot_gp <- function(gp, x_min=-5, x_max=5, n_points=100, plotly_obj=FALSE){
   # Generate a grid of x values
   x_grid <- seq(x_min, x_max, length.out = n_points)
@@ -41,7 +49,15 @@ plot_gp <- function(gp, x_min=-5, x_max=5, n_points=100, plotly_obj=FALSE){
   return(p)
 
 }
-
+#' Plotting a sample plot
+#' @param gp gp instance
+#' @param x_min start value x_axis
+#' @param x_max end value x-axiy
+#' @param n_points number of points generated
+#' @param n_samples number of samples
+#' @param plotly_obj plotly object or not
+#'
+#' @export
 plot_gp_posterior <- function(gp, x_min=-5, x_max=5, n_points=100, n_samples=5, plotly_obj=FALSE){
   # Generate a grid of x values
   x_grid <- seq(x_min, x_max, length.out = n_points)

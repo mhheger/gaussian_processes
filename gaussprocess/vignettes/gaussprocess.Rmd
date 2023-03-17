@@ -60,52 +60,58 @@ behind Gaussian processes.
 
 ## covariance functions
 
-The covariance function is, in a sense, the heart of the Gaussian process. It 
-describes how strongly and in which way known points influence the prediction
-of unknown function values. A covariance function has to be positive definite.
-The `gaussprocess`-package contains six implemented covariance functions. 
-Each of them follows a clear structure, which looks like this: 
+The covariance function is, in a sense, the heart of the Gaussian
+process. It describes how strongly and in which way known points
+influence the prediction of unknown function values. A covariance
+function has to be positive definite. The `gaussprocess`-package
+contains six implemented covariance functions. Each of them follows a
+clear structure, which looks like this:
 
 `cov_name(x,y,par1, par2, ..., pari)`
 
-Here `x` and `y` are numerical vectors of the same length, `par1` ,...`pari` 
-are parameters of the covariance function. It's important, that the 
-function works with `x` resp. `y` inputs of arbitrary dimension. 
+Here `x` and `y` are numerical vectors of the same length, `par1`
+,...`pari` are parameters of the covariance function. It's important,
+that the function works with `x` resp. `y` inputs of arbitrary
+dimension.
 
-##### constant covariance 
+##### constant covariance
 
-The most simple covariance function is the constant covariance function, 
-$$ f(x,y) = \sigma_0 ^2 $$
-This function only depends on $\sigma_0$ and not on $x$ or $y$. 
-You can access to this function via `constant_cov(x,y,sigma0)`. 
+The most simple covariance function is the constant covariance function,
+$$ f(x,y) = \sigma_0 ^2 $$ This function only depends on $\sigma_0$ and
+not on $x$ or $y$. You can access to this function via
+`constant_cov(x,y,sigma0)`.
 
-##### linear covariance 
+##### linear covariance
 
-The linear covariance function is defined as 
-$$ f(x,y) = \sum_{i=1}^n \sigma_i x_i y_i. $$
-You can access to the function via `linear_cov(x,y, sigma)`, please note, that
-`sigma` is a numerical vector of the same length like `x`. 
+The linear covariance function is defined as
+$$ f(x,y) = \sum_{i=1}^n \sigma_i x_i y_i. $$ You can access to the
+function via `linear_cov(x,y, sigma)`, please note, that `sigma` is a
+numerical vector of the same length like `x`.
 
 ##### squared exponential covariance
-$$f(x,y) = \exp(- \frac{\Vert x - y \Vert^2}{2l}) $$
-You can access to this function via `squared_exp_cov(x,y,l)`. Please denote,
-that `l` has to be a positive double. 
+
+$$f(x,y) = \exp(- \frac{\Vert x - y \Vert^2}{2l}) $$ You can access to
+this function via `squared_exp_cov(x,y,l)`. Please note, that `l` has to
+be a positive double.
 
 ##### exponential covariance
-$$f(x,y) = \exp(- \frac{\Vert x-y \Vert}{l}) $$
-You can access to this function via `exp_cov(x,y,l)`. Please denote,
-that `l` has to be a positive double. 
+
+$$f(x,y) = \exp(- \frac{\Vert x-y \Vert}{l}) $$ You can access to this
+function via `exp_cov(x,y,l)`. Please note, that `l` has to be a
+positive double.
 
 ##### gamma exponential covariance
-$$f(x,y) = \exp(- (\frac{\Vert x-y \Vert^2}{l})^\gamma )$$
-You can access to this function via `gamma_exp_cov(x,y,l, gamma)`. Please
-denote, that `l` has to be a positive double and the value of `gamma` is
-between 0 and 2. 
+
+$$f(x,y) = \exp(- (\frac{\Vert x-y \Vert^2}{l})^\gamma )$$ You can
+access to this function via `gamma_exp_cov(x,y,l, gamma)`. Please note,
+that `l` has to be a positive double and the value of `gamma` is between
+0 and 2.
 
 ##### rational quadratic covariance
-$$f(x,y) = 1 + (\frac{\Vert x -y \Vert^2}{2 \alpha l^2})^{-\alpha}$$
-You can access to this function via `rational`_cov(x,y,l, alpha)`. Please
-denote, that `l` and `alpha` have to be a positive double. 
+
+$$f(x,y) = 1 + (\frac{\Vert x -y \Vert^2}{2 \alpha l^2})^{-\alpha}$$ You
+can access to this function via `rational_cov(x,y,l, alpha)`. Please
+note, that `l` and `alpha` have to be a positive double.
 
 ## first predictions
 
@@ -143,9 +149,10 @@ first discuss the `predict_gauss`-function:
     -   a closure, that maps numerical inputs with the right dimension
         to double values
 
--    `...`: further arguments passed to the covariance-function.
+-   `...`: further arguments passed to the covariance-function.
 
-Let's make an example: 
+Let's make an example:
+
 ```{r eval=FALSE, include=FALSE}
 X <- 1:10
 y <- sin(X) + runif(10,0,0.5)
@@ -158,13 +165,15 @@ predict_gauss(
   l = 1
 )
 ```
-The function outputs a list of three elements: 
 
-- `f_predict`: the mean value of the conditioned random variable representing 
-the function value at position `x_input`
-- `var_f`: the associated variance 
-- `log_marginal_likelihood`: returns the logarithmic marginal likelihood of
-the currently used model (depending on the data, noise and used covariance function)
+The function outputs a list of three elements:
+
+-   `f_predict`: the mean value of the conditioned random variable
+    representing the function value at position `x_input`
+-   `var_f`: the associated variance
+-   `log_marginal_likelihood`: returns the logarithmic marginal
+    likelihood of the currently used model (depending on the data, noise
+    and used covariance function)
 
 ## The usage of the `gp`-class:
 
@@ -216,8 +225,8 @@ will have a look at the different parameters of this function:
 -   `y_learn`: the (noisy) function values. Normally this is a numeric
     vector, but if you used a data.frame for `X_learn`, you can specify
     a column of this data.frame, that contains the associated y-values.
--   `noise`: The variance of the noise, that distorts the real
-    function values.
+-   `noise`: The variance of the noise, that distorts the real function
+    values.
 
 Let's see this in action:
 
@@ -297,8 +306,8 @@ setter-functions are available:
     covariance
 -   `set_mean_fun()` if we have further information about the
     mean-function, that we want to pass to our model.
--   `set_noise()` if we want to change the value of the variance
-    of the noise on the data.
+-   `set_noise()` if we want to change the value of the variance of the
+    noise on the data.
 
 Let's start with the different covariance-functions:
 
@@ -440,24 +449,25 @@ some more, like:
 
 ###### `gp_app()`
 
-If you do not like to modify your `gp`-instance via console, you can also use 
-an interactive user-interface. 
-Just call `gp_app(<obj>)` to work on a `gp`-instance via a shiny-app. 
-If you do not pass an argument or an empty `gp`-object to this function, 
-you will work on an anonymous object, that will be deleted after closing the app. 
+If you do not like to modify your `gp`-instance via console, you can
+also use an interactive user-interface. Just call `gp_app(<obj>)` to
+work on a `gp`-instance via a shiny-app. If you do not pass an argument
+or an empty `gp`-object to this function, you will work on an anonymous
+object, that will be deleted after closing the app.
 
 #### Optimizing a `gp`-instance
 
-There are several ways of optimizing the hyperparameters of a Gaussian process. 
-Beneath the standard techniques like cross-validation and grid-search you 
-can optimize a Gaussian process by maximizing the marginal likelihood. 
-We decided to implement this technique and using `nlminb` as the numerical 
-optimizer, because it allows to border the values of the parameters. 
-<i>Note: To be fair, we have to mention, that optimization of to large data will 
-lead to results, that are not always trustable, so you should double check the 
-results, just save the optimal parameters in a list. If the optimal covariance
-is the linear, than you might take a look on the log marginal likelihood. If 
-it is `Inf`, you might check the other covariance functions. </i>
+There are several ways of optimizing the hyperparameters of a Gaussian
+process. Beneath the standard techniques like cross-validation and
+grid-search you can optimize a Gaussian process by maximizing the
+marginal likelihood. We decided to implement this technique and using
+`nlminb` as the numerical optimizer, because it allows to border the
+values of the parameters. <i>Note: To be fair, we have to mention, that
+optimization of to large data will lead to results, that are not always
+trustable, so you should double check the results, just save the optimal
+parameters in a list. If the optimal covariance is the linear, than you
+might take a look on the log marginal likelihood. If it is `Inf`, you
+might check the other covariance functions. </i>
 
 ###### `optimize_gp()`
 
@@ -517,8 +527,8 @@ plot(p,-10,10)
 ```
 
 Now we use the gamma-exponential covariance function and we see, that
-also small peaks are identifiable, especially in the area between -8
-and 3.
+also small peaks are identifiable, especially in the area between -8 and
+3.
 
 ```{r include=FALSE}
 mise_2 <- integrate(function(x){(f(x)- sapply(x, function(y) get_prediction(p,y)$f_predict))^2}, -10,10)$value/20 
@@ -534,16 +544,18 @@ two regression models:
 We can see, that the value is nearly halved by doing the optimization.
 
 ## Example of application:
-Now we want to see the performance of the `gaussprocess`-package in a more 
-advanced example:
-In the first example, we will use the R-intern `diamonds`-data.frame. 
-We will focus on a subset of 547 instances, generated by grouping with 
-respect to a specific color, clarity and cut. 
-Our task will be the prediction of the price using the residual parameters. 
-A linear-fitted model will be used as competitor, we will divide the data into
-a training set using 300 data points and the residual instances as test_set. 
 
-Let's start with preparing the data: 
+Now we want to see the performance of the `gaussprocess`-package in a
+more advanced example: In the first example, we will use the R-intern
+`diamonds`-data.frame. We will focus on a subset of 547 instances,
+generated by grouping with respect to a specific color, clarity and cut.
+Our task will be the prediction of the price using the residual
+parameters. A linear-fitted model will be used as competitor, we will
+divide the data into a training set using 300 data points and the
+residual instances as test_set.
+
+Let's start with preparing the data:
+
 ```{r}
 diamonds_tbl<-as_tibble(diamonds)
 diamonds_tbl %>% mutate(clarity = as.integer(clarity),
@@ -560,19 +572,25 @@ test_set <- diamonds_selected[-train_select,]
 test_set_input <- test_set %>%  select(-c(price))
 ```
 
-In the next step we initialize the Gaussian process, add data and run optimization.
+In the next step we initialize the Gaussian process, add data and run
+optimization.
+
 ```{r}
 gp_diamond <- new.gp() %>% add_data(train_set, "price", 0.1)
 optimize_gp(gp_diamond) -> para
 ```
-<i> Note: the optimization will take some time, so if the code runs more than one 
-minute, this is nothing to worry about</i>
-Now we define our competitor: 
+
+<i> Note: the optimization will take some time, so if the code runs more
+than one minute, this is nothing to worry about</i> Now we define our
+competitor:
+
 ```{r}
 linear_model <- lm(price ~ carat + depth + table + x + y + z, data = train_set)
 ```
-And write a small function helping to evaluate the Gaussian process using the
-inputs of `test_set_input`:
+
+And write a small function helping to evaluate the Gaussian process
+using the inputs of `test_set_input`:
+
 ```{r}
 evaluate_gp <- function(){
   res <- NULL
@@ -584,7 +602,8 @@ evaluate_gp <- function(){
 }
 ```
 
-Now we can generate the predictions on the test set: 
+Now we can generate the predictions on the test set:
+
 ```{r}
 pred_lin <- predict(linear_model, test_set_input)
 pred_gp <- evaluate_gp()
@@ -595,8 +614,9 @@ tbl_res <- test_set %>%
           pred_gauss = pred_gp)
 ```
 
-Now we can check, how the Gaussian process performs on this highly linear 
-price-finding problem using the MSE to compare. 
+Now we can check, how the Gaussian process performs on this highly
+linear price-finding problem using the MSE to compare.
+
 ```{r}
 tbl_res %>%  summarize(mse_lin = mean((pred_lin-price)^2), 
                        mse_gauss = mean((pred_gauss-price)^2),
@@ -604,12 +624,16 @@ tbl_res %>%  summarize(mse_lin = mean((pred_lin-price)^2),
                        median_se_gauss = median((pred_gauss-price)^2)
                        )
 ```
-We see that the Gaussian process has nearly the same precision like the linear 
-model and the median of the squared errors is smaller using the Gaussian process. 
 
-We can also differ between the different covariance functions and their results 
-and see, if the optimization works well. Here are the MSE's of the models using 
-the different covariance functions and their optimal parameters. 
+We see that the Gaussian process has nearly the same precision like the
+linear model and the median of the squared errors is smaller using the
+Gaussian process.
+
+We can also differ between the different covariance functions and their
+results and see, if the optimization works well. Here are the MSE's of
+the models using the different covariance functions and their optimal
+parameters.
+
 ```{r include=FALSE}
 covariances<- c("squared_exp", "rational", "gamma_exp", "constant", "exponential")
 for(item in covariances){
@@ -621,6 +645,7 @@ for(item in covariances){
   tbl_res <- tbl_res %>% tibble::add_column(res)
 }
 ```
+
 ```{r echo=FALSE}
 tbl_res %>% summarize(mse_lin_cov = mean((pred_gauss-price)^2),
                       mse_sqr_exp = mean((squared_exp-price)^2),
@@ -629,15 +654,17 @@ tbl_res %>% summarize(mse_lin_cov = mean((pred_gauss-price)^2),
                       mse_constant = mean((constant-price)^2),
                       mse_exponential = mean((exponential-price)^2))
 ```
-We see, that in this case the optimization procedure really leads to the optimal
-solution subject to the MSE. 
 
+We see, that in this case the optimization procedure really leads to the
+optimal solution subject to the MSE.
 
-The second example will use less data, but in difference to the first example
-the relation between the the variable and the results is not linear. 
-We use the `Tetra` data set original given by the `NRAIA`-package, it describes the 
-concentration of the drug tetracycline in the blood relating on the time. 
-Let's load the data set and train a Gaussian process. 
+The second example will use less data, but in difference to the first
+example the relation between the the variable and the results is not
+linear. We use the `Tetra` data set original given by the
+`NRAIA`-package, it describes the concentration of the drug tetracycline
+in the blood relating on the time. Let's load the data set and train a
+Gaussian process.
+
 ```{r, fig.width = 5 , fig.align = "center"}
 Tetra <- tibble(time = c(1,2,3,4,6,8,10,12, 16),
                 conc = c(0.7, 1.2, 1.4, 1.4, 1.1, 0.8, 0.6, 0.5, 0.3))
@@ -650,8 +677,9 @@ optimize_gp(gp_tetra)
 
 plot(gp_tetra, 0,14)
 ```
-We see, that it's also possible to regress non-linear data without overfitting.
 
+We see, that it's also possible to regress non-linear data without
+overfitting.
 
 ## Some words about classification:
 
@@ -794,10 +822,10 @@ prediction
 
 The method returns a numeric vector. The number represent the predicted
 probabilities for the different classes. So in this example, the
-probability, that $(1,1.5)$ belongs to class $2$ is \`r
-prediction[[2]]\`\`. A possible decision rule for getting a prediction
-on the class labels is taking the class with maximum possibility. So in
-this case our prediction would be class $2$ and thus correct.
+probability, that $(1,1.5)$ belongs to class $2$ is `r prediction[[2]]`.
+A possible decision rule for getting a prediction on the class labels is
+taking the class with maximum possibility. So in this case our
+prediction would be class $2$ and thus correct.
 
 There are more getter-functions for the `gp_classification` objects,
 their usage is quite straight-forward, so we will just mention them:

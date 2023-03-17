@@ -2,6 +2,11 @@
 R6::R6Class("gp",
             public = list(
               #--------adding data---------------
+#' #Use add_data() instead
+#' @param x numeric vector
+#' @param y numeric vector
+#' @param noise numeric vector
+#' @details Use ?add_data() to get to the real-used function
               add_data = function(x,y, noise=0.1) {
                 l <- convert_to_list(x, length(y))
                 if(!is.null(private$input_dimension)){
@@ -26,20 +31,26 @@ R6::R6Class("gp",
 
 
               #-----------getter functions for the private values-----------------------------
+#' #Use get_cov_name() instead
+#' @details Use ?get_cov_name() to get to the real-used function
               get_cov_name = function() private$covname,
-
+#' #Use get_K() instead
+#' @details Use ?get_K() to get to the real-used function
               get_K = function() private$K,
-
+#' #Use get_cov()
+#' @details Use ?get_cov() to get to the real-used function
               get_cov = function() {
                 #print(self$get_cov_name())
                 private$cov
                 }
               ,
+#' #Use get_data() instead
+#' @details Use ?get_data() to get to the real-used function
               get_data = function() {
                 list(X_learn=private$X_learn, y_learn = private$y_learn)
               },
-
-
+#' #Use get_parameter() instead
+#' @details Use ?get_parameter() to get to the real-used function
               get_parameter = function(){
                 parameter_list <- c("sigma", "l", "alpha", "sigma0", "gamma")
                 return <- list()
@@ -50,27 +61,36 @@ R6::R6Class("gp",
                 }
                 return
               },
-
+#' #Use get_mean_fun() instead
+#' @details Use ?get_mean_fun() to get to the real-used function
               get_mean_fun = function(){
                 f <- private$mean_fun
                 if(is.numeric(f))
                   return(function(x) f)
                 return(f)
               },
-
+#' #Use get_noise() instead
+#' @details Use ?get_noise() to get to the real-used function
               get_noise = function() private$noise,
-
+#' #Use get_prediction() instead
+#' @param input numeric vector
+#' @details Use ?get_prediction() to get to the real-used function
               get_prediction = function(input) {
                 if(is.null(private$input_dimension))
                   stop("You have to add data first, then you can get a prediction")
                 predict_gauss2(self, x_input = input)},
-
+#' #Use get_log_marginal_likelihood() instead
+#' @details Use ?get_log_marginal_likelihood to get to the real-used function
               get_log_marginal_likelihood = function() private$log_marginal_likelihood,
-
+#' #getting input dimension
+#' @return input dimension
               get_input_dim = function() private$input_dimension,
 
               #-----------setter functions for the private values-----------------------------
               #argument cov: name of the covariance function
+#' #Use set_cov() instead
+#' @param cov name of the covariance function
+#' @details Use ?set_cov() to get to the real-used function
               set_cov = function(cov){
                 private$covname <- cov
                 private$cov <- init_cov(cov,
@@ -85,7 +105,15 @@ R6::R6Class("gp",
                   self$update_marginal_likelihood()
                 }
               },
-
+#' #Use set_parameter() instead
+#' @param sigma numeric vector
+#' @param l numeric vector
+#' @param alpha numeric vector
+#' @param sigma0 numeric vector
+#' @param gamma numeric vector
+#'
+#' @return updated element
+#' @details Use ?set_parameter to get to the real-used function
               set_parameter = function(sigma=NULL, l=NULL, alpha=NULL, sigma0=NULL, gamma=NULL) {
                 # need to add checks in the real use functions
                 if(all(!is.null(sigma))) if(all(!is.na(sigma))) private$sigma <- sigma
@@ -99,7 +127,10 @@ R6::R6Class("gp",
                   self$update_marginal_likelihood()
                 }
               },
-
+#' #Use set_noise() instead
+#' @param noise numeric vector
+#' @return updated element
+#' @details Use ?set_noise to get to the real-used function
               set_noise = function(noise){
                 if(is.null(noise))
                   stop("Cannot handle NULL, noise has to be a positive double")
@@ -109,7 +140,10 @@ R6::R6Class("gp",
                   stop("noise has to be a positive double value")
                 private$noise <- noise
               },
-
+#' #Use ?set_mean_fun instead
+#' @param f numeric vector or closure
+#' @return updated element
+#' @details Use ?set_mean_fun to get to the real-used function
               set_mean_fun = function(f){
                 if((!typeof(f)=="closure" & !is.numeric(f)) | length(f) !=1)
                   stop("mean_fun has to be either a function or a numeric vector
@@ -122,10 +156,11 @@ R6::R6Class("gp",
                     stop("mean function is just allowed to output numeric values of length 1")
                 private$mean_fun <- f
               },
-
+#' #Use optim_gp() instead
+#' @return updated element
               optim_parameter = function() {optimize_parameters(self)} ,
 
-#' Plotting a `gp`-instance
+#' #Plotting a `gp`-instance
 #'
 #' @param x_start start value in x-direction
 #' @param x_end end value in x-direction
@@ -145,7 +180,6 @@ R6::R6Class("gp",
 #' # sampled graph
 #' plot(p, x_start = -3, x_end = 8, sampled_graph = T)
 #'
-#' l
               plot = function(x_start= 0, x_end = 10, n_samples = 3, n_points = 100, sampled_graph = FALSE, plotly_obj=FALSE) {
                 if(is.null(private$input_dimension))
                   stop("You have to add data before plotting")
@@ -165,6 +199,8 @@ R6::R6Class("gp",
                 }
               },
 
+#' #Printing a `gp` instance
+#' @return print element
               print = function(){
                 if(!is.null(private$covname)){
                   parameters_name <-cov_list[[self$get_cov_name()]]$parameter
@@ -196,7 +232,8 @@ R6::R6Class("gp",
                   print("Empty gp object. Please add data for a more detailed output.")
                 }
               },
-
+#' #Updating marginal likelihood
+#' @return modified element
               update_marginal_likelihood = function(){
                 private$log_marginal_likelihood <-
                   unclass(self$get_prediction(numeric(private$input_dimension))$log_marginal_likelihood)

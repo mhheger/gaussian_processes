@@ -186,7 +186,7 @@ mcgp$set_parameters(1, "linear", list(sigma = c(1,1,1)))
 \describe{
 \item{\code{n}}{number of classes, that are used}
 
-\item{\code{covslist}}{of length n, with names of the covariance functions, that
+\item{\code{covs}}{of length n, with names of the covariance functions, that
 should be used. Per default squared_exp}
 }
 \if{html}{\out{</div>}}
