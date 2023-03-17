@@ -16,6 +16,8 @@ library(shiny)
 #'@import shinyFeedback
 #'@importFrom stats na.omit
 #'@importFrom utils read.csv
+#'@importFrom stringr str_glue
+#'@import DT
 gp_app <- function(obj=NULL){
   if(!is.null(obj))
     if(!("gp" %in% class(obj)))
@@ -718,7 +720,7 @@ testing_server <- function(input,output, session){
 
   output$prediction <- renderPrint({
     if(!is.null(X_data()) & !is.null(prediction()))
-      s <- str_glue("According to the setting of the Gaussian Process,
+      s <- stringr::str_glue("According to the setting of the Gaussian Process,
                     we get to the following prediction:
 
                     - predicted value: {prediction()$f_predict}
