@@ -86,7 +86,7 @@
 #'
 #' @return The, with "covname", selected covariance function or if specified,
 #' the value of the covariance function
-#' @example
+#' @examples
 #' init_cov("linear", sigma = 2)(x = 1:10, y = sin(1:10))
 #' t <- init_cov("rational", l = 1, alpha = 0.5)
 #' t(x = 1:5, y = exp(1:5))
@@ -114,7 +114,7 @@ init_cov <- function(covname, sigma=0, l=1, alpha=1, sigma0=1, gamma=1){
 #'
 #' @return List of values of parameters of each covariance function that minimize
 #' the negative log marginal likelihood.
-#' @example
+#' @examples
 #' T <- gp$new()
 #' T$add_data(x = 1:10, y = sin(1:10))
 #' T$optim_parameter()
@@ -177,10 +177,16 @@ optimize_parameters <- function(X){
 #' @param par_names Names of the parameters, character vecotr.
 #'
 #' @return Negative log likelihood function.
-#' @example
+#' @examples
 #' T <- gp$new()
 #' T$add_data(x = 1:10, y = sin(1:10))
-#' help_opt(par_values = list(sigma = 0, l = 1, gamma = 1, alpha = 1, sigma0 = 1), T, par_names = c("sigma"))
+#' help_opt(par_values = list(sigma = 0,
+#'                            l = 1,
+#'                            gamma = 1,
+#'                            alpha = 1,
+#'                            sigma0 = 1),
+#'                        T,
+#'                        par_names = c("sigma"))
 #' @export
 help_opt <- function(par_value, X, par_names){
   if("sigma" %in% par_names){

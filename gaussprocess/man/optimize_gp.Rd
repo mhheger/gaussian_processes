@@ -10,13 +10,20 @@ optimize_gp(obj)
 \item{obj}{a instance of class "gp"}
 }
 \value{
-invisible retunr of list of optimized parameters for each covariance
+invisible return of list of optimized parameters for each covariance
 function
 }
 \description{
 Optimizing hyperparameters of gp instance
 }
 \details{
-Further details about the used method.
 Optimization based on the maximization of the marginal likelihood.
+}
+\examples{
+p1 <- new.gp()
+add_data(p1, 1:5, 1:5)
+plot(p1, 0,7)
+optimize_gp(p1)
+plot(p1, 0,7)
+
 }

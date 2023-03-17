@@ -2,11 +2,11 @@
 % Please edit documentation in R/classification_laplace.R
 \name{gp_classification}
 \alias{gp_classification}
-\title{Generating a new 'gp_classification' object}
+\title{# Generating a new 'gp_classification' object}
 \description{
-Generating a new 'gp_classification' object
+# Generating a new 'gp_classification' object
 
-Generating a new 'gp_classification' object
+# Generating a new 'gp_classification' object
 }
 \examples{
 
@@ -16,7 +16,7 @@ Generating a new 'gp_classification' object
 
 mcgp <- gp_classification$new(n = 2)
 
-Adding data to 'gp_classification'-object
+#Adding data to 'gp_classification'-object
 
 
 ## ------------------------------------------------
@@ -36,7 +36,7 @@ X_learn <- list(
 
 mcgp$add_data(X_learn, y)
 
-Getting list of covariance matrices
+#Getting list of covariance matrices
 
 
 ## ------------------------------------------------
@@ -56,7 +56,7 @@ X_learn <- list(
 
 mcgp$add_data(X_learn, y)
 mcgp$get_K_list()
-Getting list of learning input data
+#Getting list of learning input data
 
 
 ## ------------------------------------------------
@@ -77,7 +77,7 @@ X_learn <- list(
 mcgp$add_data(X_learn, y)
 mcgp$get_X()
 
-Getting list of learning input labels
+#Getting list of learning input labels
 
 
 ## ------------------------------------------------
@@ -97,7 +97,7 @@ X_learn <- list(
 
 mcgp$add_data(X_learn, y)
 mcgp$get_y()
-Getting list of used covariance functions
+#Getting list of used covariance functions
 
 
 ## ------------------------------------------------
@@ -117,7 +117,7 @@ X_learn <- list(
 
 mcgp$add_data(X_learn, y)
 mcgp$get_covariances()
-Getting class label probabilities
+#Getting class label probabilities
 
 
 ## ------------------------------------------------
@@ -138,7 +138,7 @@ X_learn <- list(
 mcgp$add_data(X_learn, y)
 mcgp$get_prediction(c(1,2,4))
 
-Setting parameters
+#Setting parameters
 
 
 ## ------------------------------------------------
@@ -198,7 +198,7 @@ a new 'gp_classification' object
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{mcgp <- gp_classification$new(n = 2)
 
-Adding data to 'gp_classification'-object
+#Adding data to 'gp_classification'-object
 
 }
 \if{html}{\out{</div>}}
@@ -252,7 +252,7 @@ X_learn <- list(
 
 mcgp$add_data(X_learn, y)
 
-Getting list of covariance matrices
+#Getting list of covariance matrices
 
 }
 \if{html}{\out{</div>}}
@@ -286,7 +286,7 @@ X_learn <- list(
 
 mcgp$add_data(X_learn, y)
 mcgp$get_K_list()
-Getting list of learning input data
+#Getting list of learning input data
 
 }
 \if{html}{\out{</div>}}
@@ -321,7 +321,7 @@ X_learn <- list(
 mcgp$add_data(X_learn, y)
 mcgp$get_X()
 
-Getting list of learning input labels
+#Getting list of learning input labels
 
 }
 \if{html}{\out{</div>}}
@@ -355,7 +355,7 @@ X_learn <- list(
 
 mcgp$add_data(X_learn, y)
 mcgp$get_y()
-Getting list of used covariance functions
+#Getting list of used covariance functions
 
 }
 \if{html}{\out{</div>}}
@@ -389,7 +389,7 @@ X_learn <- list(
 
 mcgp$add_data(X_learn, y)
 mcgp$get_covariances()
-Getting class label probabilities
+#Getting class label probabilities
 
 }
 \if{html}{\out{</div>}}
@@ -433,7 +433,7 @@ X_learn <- list(
 mcgp$add_data(X_learn, y)
 mcgp$get_prediction(c(1,2,4))
 
-Setting parameters
+#Setting parameters
 
 }
 \if{html}{\out{</div>}}

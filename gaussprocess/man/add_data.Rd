@@ -16,7 +16,7 @@ with numerical values.}
 with named columns y is also allowed to be a character, that refers to the name
 of one column of X_learn}
 
-\item{noise}{a non-negative numerical value, that describes the standard deviation
+\item{noise}{a non-negative numerical value, that describes the variance
 of the noise}
 }
 \value{

@@ -546,7 +546,7 @@ pred_mc_laplace <- function(X_learn, y_learn, K_list, f_mode, cov_list, x_input,
 ## Class for more-user friendly multiclass laplace approximation
 R6::R6Class("gp_classification",
             public = list(
-              #' Generating a new 'gp_classification' object
+              #'# Generating a new 'gp_classification' object
               #'
               #' @param n  number of classes, that are used
               #' @param covslist of length n, with names of the covariance functions, that
@@ -568,7 +568,7 @@ R6::R6Class("gp_classification",
                   private$covariances[[i]]<-private$gp_list[[i]]$get_cov()
                 }
               },
-              #' Adding data to 'gp_classification'-object
+              #' #Adding data to 'gp_classification'-object
               #'
               #' @param X_learn a list of points, a matrix or a data.frame of the points with
               #' known input data
@@ -617,7 +617,7 @@ R6::R6Class("gp_classification",
                 private$X_learn <- c(private$X_learn,X_learn)
                 private$set_mode()
               },
-              #' Getting list of covariance matrices
+              #' #Getting list of covariance matrices
               #'
               #' @return list of covariance matrices, each class has it's own label
               #' @export
@@ -644,7 +644,7 @@ R6::R6Class("gp_classification",
                 }
                 return(l)
               },
-              #' Getting list of learning input data
+              #' #Getting list of learning input data
               #'
               #' @return list of learning input data
               #' @export
@@ -667,7 +667,7 @@ R6::R6Class("gp_classification",
               get_X = function(){
                 return(private$X_learn)
               },
-              #' Getting list of learning input labels
+              #' #Getting list of learning input labels
               #'
               #' @return list of learning input labels
               #' @export
@@ -689,7 +689,7 @@ R6::R6Class("gp_classification",
               get_y = function(){
                 return(private$y_learn)
               },
-              #' Getting list of used covariance functions
+              #' #Getting list of used covariance functions
               #'
               #' @return list of used covariance functions
               #' @export
@@ -711,7 +711,7 @@ R6::R6Class("gp_classification",
               get_covariances = function(){
                 return(private$covariances)
               },
-              #' Getting class label probabilities
+              #' #Getting class label probabilities
               #'
               #' @param x_input numeric vector of input data, where you want to get the prediction
               #' @param n_samples number of samples to get probabilities using monte-carlo method
@@ -747,7 +747,7 @@ R6::R6Class("gp_classification",
                 pred_mc_laplace(X_learn,y, K_list, f_mode, covs, x_input, n_samples)
               },
 
-              #' Setting parameters
+              #' #Setting parameters
               #'
               #' @param index number of the class label, whose covariance function should be
               #' modified

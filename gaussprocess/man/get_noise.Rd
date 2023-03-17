@@ -10,7 +10,7 @@ get_noise(obj)
 \item{obj}{a instance of class "gp"}
 }
 \value{
-value of the expected standard deviation of the noise according to the
+value of the variance of the noise according to the
 data of the "gp" object
 }
 \description{

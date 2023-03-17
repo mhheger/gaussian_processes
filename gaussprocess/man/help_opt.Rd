@@ -21,3 +21,14 @@ Negative log likelihood function.
 help_opt
 Helperfunction which return the negative log likelihood for the selected parameter.
 }
+\examples{
+T <- gp$new()
+T$add_data(x = 1:10, y = sin(1:10))
+help_opt(par_values = list(sigma = 0,
+                           l = 1,
+                           gamma = 1,
+                           alpha = 1,
+                           sigma0 = 1),
+                       T,
+                       par_names = c("sigma"))
+}

@@ -16,3 +16,8 @@ the negative log marginal likelihood.
 \description{
 optimize_parameters
 }
+\examples{
+T <- gp$new()
+T$add_data(x = 1:10, y = sin(1:10))
+T$optim_parameter()
+}

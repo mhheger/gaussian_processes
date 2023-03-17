@@ -74,7 +74,7 @@ gp_app <- function(obj=NULL){
                     )
         ),
         numericInput("noise",
-                     "Standard deviation of the noise:",
+                     "Variance of the noise:",
                      min= 0,
                      value = 1,
                      step = 0.1),
@@ -386,7 +386,7 @@ gp_app <- function(obj=NULL){
 
     test_noise <- reactive({
       test_noise <- (is.numeric(input$noise))&(input$noise >=0)
-      shinyFeedback::feedbackDanger("noise", !test_noise, "Standard deviation has to be positive!")
+      shinyFeedback::feedbackDanger("noise", !test_noise, "Variance of noise has to be positive!")
       test_noise
     })
 
@@ -834,7 +834,7 @@ testing_server <- function(input,output, session){
 
   test_noise <- reactive({
     test_noise <- (is.numeric(input$noise))&(input$noise >=0)
-    shinyFeedback::feedbackDanger("noise", !test_noise, "Standard deviation has to be positive!")
+    shinyFeedback::feedbackDanger("noise", !test_noise, "Variance of noise has to be positive!")
     test_noise
   })
 

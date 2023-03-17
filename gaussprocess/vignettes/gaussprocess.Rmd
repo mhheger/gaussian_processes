@@ -15,15 +15,15 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+knitr::opts_chunk$set(warning = FALSE)
 library(dplyr, tidyverse)
 library(ggplot2)
 ```
 
 ```{r setup}
-knitr::opts_chunk$set(warning = FALSE)
 library(gaussprocess)
 devtools::load_all()
-set.seed(12)
+set.seed(123)
 ```
 
 ## Gaussian Processes:
@@ -130,7 +130,7 @@ first discuss the `predict_gauss`-function:
     input dimension. Any further arguments (like parameters etc.) can be
     passed to this function via `...`
 
--   `noise`: the standard deviation of the noise on the function values.
+-   `noise`: the variance of the noise on the function values.
 
 -   `x_input`: a numerical vector, representing the coordinates of the
     point, whose function value you want to predict.
@@ -216,7 +216,7 @@ will have a look at the different parameters of this function:
 -   `y_learn`: the (noisy) function values. Normally this is a numeric
     vector, but if you used a data.frame for `X_learn`, you can specify
     a column of this data.frame, that contains the associated y-values.
--   `noise`: The standard deviation of the noise, that distorts the real
+-   `noise`: The variance of the noise, that distorts the real
     function values.
 
 Let's see this in action:
@@ -258,9 +258,9 @@ Here is a neat example, how this all works:
 
 ```{r}
 x <- 1:6
-y <- 1:6 + rnorm(6,0,0.1)
+y <- 1:6 + rnorm(6,0,0.3)
 p <- new.gp() %>% 
-  add_data(x,y,0.1) 
+  add_data(x,y,0.09) 
  get_prediction(p,3.3)
  get_prediction(p,8)
 ```
@@ -274,9 +274,9 @@ the end x-value and get a plot like this:
 
 ```{r, fig.width = 5 , fig.align = "center"}
 x <- 1:6
-y <- 1:6 + rnorm(6,0,0.1)
+y <- 1:6 + rnorm(6,0,0.3)
 p <- new.gp() %>% 
-  add_data(x,y,0.1) 
+  add_data(x,y,0.09) 
 plot(p,0,10)
 ```
 
@@ -297,8 +297,8 @@ setter-functions are available:
     covariance
 -   `set_mean_fun()` if we have further information about the
     mean-function, that we want to pass to our model.
--   `set_noise()` if we want to change the value of the standard
-    deviation of the noise on the data.
+-   `set_noise()` if we want to change the value of the variance
+    of the noise on the data.
 
 Let's start with the different covariance-functions:
 
@@ -320,9 +320,9 @@ which effects can be caused by this:
 
 ```{r,fig.width = 5 , fig.align = "center"}
 x <- 1:6
-y <- 1:6 + rnorm(6,0,0.1)
+y <- 1:6 + rnorm(6,0,0.3)
 p <- new.gp() %>% 
-  add_data(x,y,0.1) 
+  add_data(x,y,0.09) 
 get_cov_name(p)
 plot(p,0,10)
 
@@ -340,9 +340,9 @@ parameters into this function.
 
 ```{r include=FALSE}
 x <- 1:6
-y <- 1:6 + rnorm(6,0,0.1)
+y <- 1:6 + rnorm(6,0,0.3)
 p <- new.gp() %>% 
-  add_data(x,y,0.1) 
+  add_data(x,y,0.09) 
 ```
 
 ```{r}
@@ -438,6 +438,14 @@ some more, like:
 -   `get_log_marginal_likelihood(<obj>)`: returns the current log
     marginal likelihood.
 
+###### `gp_app()`
+
+If you do not like to modify your `gp`-instance via console, you can also use 
+an interactive user-interface. 
+Just call `gp_app(<obj>)` to work on a `gp`-instance via a shiny-app. 
+If you do not pass an argument or an empty `gp`-object to this function, 
+you will work on an anonymous object, that will be deleted after closing the app. 
+
 #### Optimizing a `gp`-instance
 
 There are several ways of optimizing the hyperparameters of a Gaussian process. 
@@ -445,6 +453,11 @@ Beneath the standard techniques like cross-validation and grid-search you
 can optimize a Gaussian process by maximizing the marginal likelihood. 
 We decided to implement this technique and using `nlminb` as the numerical 
 optimizer, because it allows to border the values of the parameters. 
+<i>Note: To be fair, we have to mention, that optimization of to large data will 
+lead to results, that are not always trustable, so you should double check the 
+results, just save the optimal parameters in a list. If the optimal covariance
+is the linear, than you might take a look on the log marginal likelihood. If 
+it is `Inf`, you might check the other covariance functions. </i>
 
 ###### `optimize_gp()`
 
@@ -456,9 +469,9 @@ to the optimal. Let's see this in action:
 
 ```{r, fig.width = 5 , fig.align = "center"}
 x <- 1:6
-y <- 1:6 + rnorm(6,0,0.1)
+y <- 1:6 + rnorm(6,0,0.3)
 p <- new.gp() %>% 
-  add_data(x,y,0.1) 
+  add_data(x,y,0.03) 
 plot(p,0,10)
 optimize_gp(p)
 plot(p,0,10)
@@ -482,7 +495,7 @@ Now we initialize a new `gp`-instance and add the noisy data:
 
 ```{r, fig.width = 5 , fig.align = "center"}
 p <- new.gp() %>% 
-   add_data(xx,yy,0.2)
+   add_data(xx,yy,0.04)
 plot(p,-10,10)
 ```
 
@@ -616,6 +629,9 @@ tbl_res %>% summarize(mse_lin_cov = mean((pred_gauss-price)^2),
                       mse_constant = mean((constant-price)^2),
                       mse_exponential = mean((exponential-price)^2))
 ```
+We see, that in this case the optimization procedure really leads to the optimal
+solution subject to the MSE. 
+
 
 The second example will use less data, but in difference to the first example
 the relation between the the variable and the results is not linear. 
@@ -626,7 +642,7 @@ Let's load the data set and train a Gaussian process.
 Tetra <- tibble(time = c(1,2,3,4,6,8,10,12, 16),
                 conc = c(0.7, 1.2, 1.4, 1.4, 1.1, 0.8, 0.6, 0.5, 0.3))
 gp_tetra <- new.gp() %>%
-              add_data(Tetra, "conc", 0.1)
+              add_data(Tetra, "conc", 0.01)
 
 plot(gp_tetra,0,14)
 

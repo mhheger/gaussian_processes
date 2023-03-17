@@ -107,6 +107,9 @@ cov_list <- list(
 init_cov
 }
 \examples{
+init_cov("linear", sigma = 2)(x = 1:10, y = sin(1:10))
+t <- init_cov("rational", l = 1, alpha = 0.5)
+t(x = 1:5, y = exp(1:5))
 cov_fun <- init_cov("linear", sigma = c(1,2,3))
 cov_fun(c(1,1,1), c(2,3,4))
 

@@ -388,7 +388,7 @@ new.gp <- function(cov_fun = "squared_exp"){
 #' @param y either a numerical vector or in the case that X_learn is a data.frame
 #' with named columns y is also allowed to be a character, that refers to the name
 #' of one column of X_learn
-#' @param noise a non-negative numerical value, that describes the standard deviation
+#' @param noise a non-negative numerical value, that describes the variance
 #' of the noise
 #'
 #' @return a modified version of obj. It is possible to pipe this function due to
@@ -545,6 +545,8 @@ get_cov <- function(obj){
 get_data <- function(obj, df = T){
   if(!("gp" %in% class(obj)))
     stop("obj has to be a member of class 'gp'")
+  if(is.null(obj$get_input_dim()))
+    stop("You have to add data first.")
   if(df){
     data <- obj$get_data()
     X_learn <- data$X_learn
@@ -625,7 +627,7 @@ get_mean_fun <- function(obj){
 #'
 #' @param obj  a instance of class "gp"
 #'
-#' @return value of the expected standard deviation of the noise according to the
+#' @return value of the variance of the noise according to the
 #' data of the "gp" object
 #'
 #' @seealso set_noise() for setting this value
@@ -745,10 +747,10 @@ set_cov <- function(obj, cov_fun){
   invisible(obj)
 }
 
-#' Setting the standard deviation of a gp instance
+#' Setting the variance of noise of a gp instance
 #'
 #' @param obj a instance of class "gp"
-#' @param noise a non-negative numerical value, that describes the standard deviation
+#' @param noise a non-negative numerical value, that describes the variance
 #' of the noise
 #'
 #' @return invisible return of the modified object. Be aware, that all
@@ -893,18 +895,19 @@ set_mean_fun <- function(obj, mean_fun){
 #'
 #' @param obj a instance of class "gp"
 #'
-#' @return invisible retunr of list of optimized parameters for each covariance
+#' @return invisible return of list of optimized parameters for each covariance
 #' function
 #'
 #' @details
-#' Further details about the used method.
 #' Optimization based on the maximization of the marginal likelihood.
 #' @export
 #'
 #' @examples
-#'
-#'
-#'
+#' p1 <- new.gp()
+#' add_data(p1, 1:5, 1:5)
+#' plot(p1, 0,7)
+#' optimize_gp(p1)
+#' plot(p1, 0,7)
 #'
 optimize_gp <- function(obj){
   if(!("gp" %in% class(obj)))

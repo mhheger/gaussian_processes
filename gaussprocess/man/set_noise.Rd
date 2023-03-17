@@ -2,14 +2,14 @@
 % Please edit documentation in R/structure.R
 \name{set_noise}
 \alias{set_noise}
-\title{Setting the standard deviation of a gp instance}
+\title{Setting the variance of noise of a gp instance}
 \usage{
 set_noise(obj, noise)
 }
 \arguments{
 \item{obj}{a instance of class "gp"}
 
-\item{noise}{a non-negative numerical value, that describes the standard deviation
+\item{noise}{a non-negative numerical value, that describes the variance
 of the noise}
 }
 \value{
@@ -17,7 +17,7 @@ invisible return of the modified object. Be aware, that all
 setter-functions work on reference.
 }
 \description{
-Setting the standard deviation of a gp instance
+Setting the variance of noise of a gp instance
 }
 \examples{
 p1 <- new.gp()
