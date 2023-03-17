@@ -1,8 +1,8 @@
 #' constant_cov
 #'
-#' @param x 
-#' @param y 
-#' @param sigma 
+#' @param x numerical vector
+#' @param y numerical vector
+#' @param sigma numerical value
 #'
 #' @return constant covariance of input parameters
 #' @export
@@ -24,9 +24,9 @@ constant_cov <- function(x,y,sigma) {
 
 #' linear_cov
 #'
-#' @param x 
-#' @param y 
-#' @param sigma 
+#' @param x numerical vector
+#' @param y numerical vector
+#' @param sigma numerical vector of the same length as x and y
 #'
 #' @return linear covariance of input parameters
 #' @export
@@ -48,9 +48,9 @@ linear_cov <- function(x,y, sigma) {
 
 #' squared_exp_cov
 #'
-#' @param x 
-#' @param y 
-#' @param l
+#' @param x numerical vector
+#' @param y numerical vector
+#' @param l positive double value
 #'
 #' @return squared exponential covariance of input parameters
 #' @export
@@ -72,9 +72,9 @@ squared_exp_cov <- function(x,y, l) {
 
 #' exp_cov
 #'
-#' @param x 
-#' @param y 
-#' @param l
+#' @param x numerical vector
+#' @param y numerical vector
+#' @param l positive double value
 #'
 #' @return exponential covariance of input parameters
 #' @export
@@ -94,10 +94,10 @@ exp_cov <- function(x,y,l) {
 
 #' gamma_exp_cov
 #'
-#' @param x 
-#' @param y 
-#' @param l
-#' @param gamma 
+#' @param x numerical value
+#' @param y numerical value
+#' @param l positive double value
+#' @param gamma double value between 0 and 2
 #'
 #' @return gamma exponential covariance of input parameters
 #' @export
@@ -121,10 +121,10 @@ gamma_exp_cov <- function(x,y, l, gamma) {
 
 #' rational_quadratic_cov
 #'
-#' @param x 
-#' @param y 
-#' @param l
-#' @param alpha
+#' @param x numerical vector
+#' @param y numerical vector
+#' @param l positive double value
+#' @param alpha positive double value
 #'
 #' @return rational quadratic covariance of input parameters
 #' @export
@@ -149,16 +149,16 @@ rational_quadratic_cov <- function(x,y, l, alpha) {
 
 #summarise covariance functions in list
 #functions with missing parameters will be assigned NA
-  
+
 #' covariance_list
 #'
-#' @param l 
-#' @param alpha 
-#' @param gamma 
-#' @param x 
-#' @param y 
-#' @param sigma 
-#' @param tibble 
+#' @param l positive double value
+#' @param alpha positive double value
+#' @param gamma double value between 0 and 2
+#' @param x numerical vector
+#' @param y numerical vector
+#' @param sigma numerical vector or value
+#' @param tibble logical value
 #'
 #' @return list of different covariance of given input parameters, optionally as tibble
 #' @export
