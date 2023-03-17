@@ -1,4 +1,16 @@
-
+#' constant_cov
+#'
+#' @param x 
+#' @param y 
+#' @param sigma 
+#'
+#' @return constant covariance of input parameters
+#' @export
+#'
+#' @examples
+#' x <- runif(3,-1,1)
+#' y <- runif(3,-1,1)
+#' constant_cov(x,y,1)
 constant_cov <- function(x,y,sigma) {
   if(is.null(sigma) & (is.null(y) | is.null(x))) {
     NA
@@ -10,7 +22,17 @@ constant_cov <- function(x,y,sigma) {
 }
 
 
-
+#' linear_cov
+#'
+#' @param x 
+#' @param y 
+#' @param sigma 
+#'
+#' @return linear covariance of input parameters
+#' @export
+#'
+#' @examples
+#' linear_cov(c(1,1), c(2,1), c(3,4))
 linear_cov <- function(x,y, sigma) {
   if(is.null(x) | is.null(y) | is.null(sigma)) {
     NA
@@ -24,6 +46,17 @@ linear_cov <- function(x,y, sigma) {
 }
 
 
+#' squared_exp_cov
+#'
+#' @param x 
+#' @param y 
+#' @param l
+#'
+#' @return squared exponential covariance of input parameters
+#' @export
+#'
+#' @examples
+#' squared_exp_cov(c(1,1),c(2,1), 4)
 squared_exp_cov <- function(x,y, l) {
   if(is.null(x) | is.null(y) | is.null(l)) {
     NA
@@ -37,7 +70,17 @@ squared_exp_cov <- function(x,y, l) {
 }
 
 
-
+#' exp_cov
+#'
+#' @param x 
+#' @param y 
+#' @param l
+#'
+#' @return exponential covariance of input parameters
+#' @export
+#'
+#' @examples
+#' exp_cov(c(1,1),c(2,1), 4)
 exp_cov <- function(x,y,l) {
   if(is.null(x) | is.null(y) | is.null(l)) {
     NA
@@ -49,7 +92,18 @@ exp_cov <- function(x,y,l) {
 }
 
 
-
+#' gamma_exp_cov
+#'
+#' @param x 
+#' @param y 
+#' @param l
+#' @param gamma 
+#'
+#' @return gamma exponential covariance of input parameters
+#' @export
+#'
+#' @examples
+#' gamma_exp_cov(c(1,1),c(2,1), 4, 2/3)
 gamma_exp_cov <- function(x,y, l, gamma) {
   if(is.null(x) | is.null(y) | is.null(gamma)) {
     NA
@@ -65,6 +119,18 @@ gamma_exp_cov <- function(x,y, l, gamma) {
 }
 
 
+#' rational_quadratic_cov
+#'
+#' @param x 
+#' @param y 
+#' @param l
+#' @param alpha
+#'
+#' @return rational quadratic covariance of input parameters
+#' @export
+#'
+#' @examples
+#' rational_quadratic_cov(c(1,1),c(2,1), 1.5, 3)
 rational_quadratic_cov <- function(x,y, l, alpha) {
   if(is.null(x) | is.null(y) | is.null(alpha) | is.null(l)) {
     NA
@@ -83,6 +149,19 @@ rational_quadratic_cov <- function(x,y, l, alpha) {
 
 #summarise covariance functions in list
 #functions with missing parameters will be assigned NA
+  
+#' covariance_list
+#'
+#' @param l 
+#' @param alpha 
+#' @param gamma 
+#' @param x 
+#' @param y 
+#' @param sigma 
+#' @param tibble 
+#'
+#' @return list of different covariance of given input parameters, optionally as tibble
+#' @export
 covariance_list <- function(l = NULL, alpha = NULL, gamma = NULL,
                             x = NULL, y = NULL, sigma = NULL, tibble = FALSE) {
   lst <- list(
